@@ -7,10 +7,15 @@ import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
+
+import baker.soccer.util.FootballAnalysisUtil;
 
 public class Test{
 	public static void main(String args[]) throws Exception{
-		HttpURLConnection con = null;
+		/*HttpURLConnection con = null;
 		String urlParameters = "username=SuperGrover&password=u0028854&url=members.fantasyfootballscout.co.uk&login=Login";
 
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
@@ -42,6 +47,14 @@ public class Test{
 		}
 		finally {
 			con.disconnect();
+		}*/
+		
+		TreeMap<Integer,java.util.Date> temp = FootballAnalysisUtil.getGameweekDates();
+		
+		Iterator<Integer> iterator = temp.keySet().iterator();
+		
+		while(iterator.hasNext()){
+			System.out.println(temp.get(iterator.next()));
 		}
 	}
 }

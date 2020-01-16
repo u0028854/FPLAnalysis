@@ -213,7 +213,7 @@ public class FootballAnalysisAction {
 			}
 
 			// Until determine how to parameterize years, use the year fomr command line
-			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(false), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years)), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
+			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(false), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years), option), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
 		}
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_ANALYSIS)){
 			/*

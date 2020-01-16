@@ -8,9 +8,12 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import baker.soccer.fpl.objects.FPLPlayerObject;
@@ -761,6 +764,31 @@ public class FootballAnalysisUtil {
 			System.err.println("Month out of range for " + matchDate.get(Calendar.MONTH));
 			return 0;
 		}
+	}
+	
+	public static java.util.Date getGameweekStart(int previousGWCount) throws Exception{
+		return null;
+		
+		/*
+		 * Need to determine current gameweek and then get data starting at current GW - previosGWCount to current GW
+		 * 
+		 * Will need to figure out TreeMap
+		 */
+	}
+	
+	public static TreeMap<Integer, java.util.Date> getGameweekDates() throws Exception{
+		TreeMap<Integer, java.util.Date> retVal = new TreeMap<Integer, java.util.Date>();
+		ArrayList<String> fileData = getFileDataByLine(FootballAnalysisConstants.FPL_GW_MAP);
+		
+		for (int i = 0; i < fileData.size(); i++){
+			String[]tempStrings = fileData.get(i).split(",");
+			
+			if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + FootballAnalysisConstants.FPL_GW_MAP);
+			
+			retVal.put(new Integer(tempStrings[0]),new java.util.Date(Long.parseLong(tempStrings[1])));
+		}
+		
+		return retVal;
 	}
 
 	public static String convertCharsetChars(String playerName) {

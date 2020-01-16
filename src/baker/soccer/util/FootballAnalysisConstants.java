@@ -43,6 +43,7 @@ public class FootballAnalysisConstants {
 	public static final String DEF_STATS_TABLE2 = EPL_BASE_DIR + "\\stat_tables\\def2.html";
 	public static final String DEF_STATS_TABLE3 = EPL_BASE_DIR + "\\stat_tables\\def3.html";
 	public static final String FPL_FS_PLAYER_MAP = EPL_BASE_DIR + "\\stat_tables\\player_map.csv";
+	public static final String FPL_GW_MAP = EPL_BASE_DIR + "\\stat_tables\\GWSchedule.csv";
 	public static final String STATS_TABLE_OUTPUT_FILE = EPL_BASE_DIR + "\\EPL Excels\\Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_6GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\6GW_Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_4GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\4GW_Analysis.xlsx";

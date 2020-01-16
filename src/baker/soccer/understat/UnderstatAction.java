@@ -27,7 +27,7 @@ import baker.soccer.util.FootballAnalysisUtil;
 
 public class UnderstatAction {
 	public static void main(String [] args) throws Exception{
-		HashMap<String, UnderstatPlayerObject> temp = UnderstatAction.processUnderstatXGPlayerJSON(FootballAnalysisConstants.EPL_SEASONS[FootballAnalysisConstants.EPL_SEASONS.length - 1]);
+		HashMap<String, UnderstatPlayerObject> temp = UnderstatAction.processUnderstatXGPlayerJSON(FootballAnalysisConstants.EPL_SEASONS[FootballAnalysisConstants.EPL_SEASONS.length - 1], FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_ARG);
 
 		Iterator<String> iterator = temp.keySet().iterator();
 
@@ -68,8 +68,8 @@ public class UnderstatAction {
 		}
 	}
 
-	public static HashMap<String, UnderstatPlayerObject> processUnderstatXGPlayerJSON(int eplSeason) throws Exception{
-		return processPlayerJSON(eplSeason);
+	public static HashMap<String, UnderstatPlayerObject> processUnderstatXGPlayerJSON(int eplSeason, String option) throws Exception{
+		return processPlayerJSON(eplSeason, option);
 	}
 
 	public static HashMap<String, UnderstatTeamObject> processUnderstatXGTeamJSON() throws Exception{
@@ -77,7 +77,7 @@ public class UnderstatAction {
 		return processTeamJSON(FootballAnalysisConstants.USTEAMOUTPUTFILENAME);
 	}
 
-	public static HashMap<String, UnderstatPlayerObject> processPlayerJSON(int eplSeason) throws Exception{
+	public static HashMap<String, UnderstatPlayerObject> processPlayerJSON(int eplSeason, String option) throws Exception{
 		HashMap<String, UnderstatPlayerObject> retVal = new HashMap<String, UnderstatPlayerObject>();
 
 		//create ObjectMapper instance
@@ -90,6 +90,11 @@ public class UnderstatAction {
 		for (int i=0; i < FootballAnalysisConstants.USAPIPARAMS.length; i++){
 			urlParameters += "&" + FootballAnalysisConstants.USAPIPARAMS[i];
 		}
+		
+		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) || option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
+			java.util.Date periodStartDate = FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4);
+		}
+		
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 
 		try {
