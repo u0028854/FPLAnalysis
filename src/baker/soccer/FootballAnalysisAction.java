@@ -53,8 +53,6 @@ import baker.soccer.util.objects.ExcelCellObject;
 import baker.soccer.util.objects.FPLFSMapObject;
 
 /*****
- * Testing integration with Eclipse
- * 
  * Each year:
  * 
  * Change paths on batch files
