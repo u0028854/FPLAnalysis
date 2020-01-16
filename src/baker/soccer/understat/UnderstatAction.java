@@ -93,15 +93,10 @@ public class UnderstatAction {
 		}
 		
 		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) || option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
-			//java.util.Date periodStartDate = FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4);
-
-			//SimpleDateFormat startDateParam = new SimpleDateFormat("YYYY-MM-DD");
 			urlParameters += "&date_start=" + (new SimpleDateFormat("YYYY-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + "+00%3A00%3A00");
-			//System.out.println(new SimpleDateFormat("YYYY-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + " 00:00:00");
 		}
 		
 		System.out.println(urlParameters);
-		//byte[] postData = URLEncoder.encode(urlParameters, "UTF-8").getBytes(StandardCharsets.UTF_8);
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 
 		try {
@@ -122,7 +117,6 @@ public class UnderstatAction {
 
 			while(iterator.hasNext()){
 				UnderstatPlayerObject tempPlayer = iterator.next();
-				//retVal.put(tempPlayer.getPlayer_name(), new UnderstatPlayerObject(tempPlayer.getPlayer_name(), tempPlayer.getxG90(), tempPlayer.getnpxG90(), tempPlayer.getxA90()));
 				retVal.put(tempPlayer.getPlayer_name(), tempPlayer);
 			}
 		}

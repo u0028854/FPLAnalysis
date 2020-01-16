@@ -422,7 +422,6 @@ public class FootballAnalysisAction {
 			FSTeamObject newTeam = addHash.get(addIterator.next());
 
 			if(baseHash.containsKey(newTeam.getTeamName())){
-				//System.out.println("Found hash for " + newTeam.getTeamName());
 				FSTeamObject oldTeam = baseHash.get(newTeam.getTeamName());
 
 				oldTeam.addAllMatchValues(newTeam.getMatchValues());
@@ -430,7 +429,6 @@ public class FootballAnalysisAction {
 				retVal.put(oldTeam.getTeamName(), oldTeam);
 			}
 			else{
-				//System.out.println("Adding new hash for " + newTeam.getTeamName());
 				retVal.put(newTeam.getTeamName(), newTeam);
 			}
 		}
@@ -644,7 +642,7 @@ public class FootballAnalysisAction {
 					fileData.append("," + tempMatch.getGameWeek());
 					fileData.append("," + tempMatch.getMatchDate());
 
-					for (int i=0; i < columnHeaders.size(); i++){//System.out.println(tempOpponent.getMatchValues().keySet().toString());
+					for (int i=0; i < columnHeaders.size(); i++){
 						fileData.append("," + tempOpponent.getMatchValue(columnHeaders.get(i)));
 					}
 					for (int i=0; i < columnHeaders.size(); i++){

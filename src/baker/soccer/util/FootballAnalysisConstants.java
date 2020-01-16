@@ -9,7 +9,6 @@ import java.util.Iterator;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 
 public class FootballAnalysisConstants {
-
 	// Command Line Options
 	public static final String PROCESS_FS_PLAYERMATCH_ARG = "process_fs_player_matches";
 	public static final String PROCESS_FS_TEAM_MATCH_ARG = "process_fs_team_matches";
