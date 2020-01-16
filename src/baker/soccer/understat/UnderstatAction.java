@@ -3,9 +3,11 @@ package baker.soccer.understat;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -92,9 +94,15 @@ public class UnderstatAction {
 		}
 		
 		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) || option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
-			java.util.Date periodStartDate = FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4);
+			//java.util.Date periodStartDate = FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4);
+
+			//SimpleDateFormat startDateParam = new SimpleDateFormat("YYYY-MM-DD");
+			urlParameters += "&date_start=" + (new SimpleDateFormat("YYYY-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + "+00%3A00%3A00");
+			//System.out.println(new SimpleDateFormat("YYYY-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + " 00:00:00");
 		}
 		
+		System.out.println(urlParameters);
+		//byte[] postData = URLEncoder.encode(urlParameters, "UTF-8").getBytes(StandardCharsets.UTF_8);
 		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 
 		try {

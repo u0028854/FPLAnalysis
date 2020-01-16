@@ -29,6 +29,7 @@ public class FootballAnalysisConstants {
 	public static final String[] PLAYER_POSITIONS = {"DEF", "FWD", "MID"};
 	public static final ArrayList<Integer> EPL_FIRST_HALF_MONTHS = getCalendarMonths(true);
 	public static final ArrayList<Integer> EPL_SECOND_HALF_MONTHS = getCalendarMonths(false);
+	public static final ArrayList<java.util.Date> FPL_GAMEWEEK_DATES = getGameweekDates();
 
 	// Path constants
 	public static final String EPL_BASE_DIR = "c:\\EPLJava";
@@ -737,5 +738,28 @@ public class FootballAnalysisConstants {
 		default:
 			return fsTeamName;
 		}
+	}
+
+	private static ArrayList<java.util.Date> getGameweekDates(){
+		ArrayList<java.util.Date> retVal = new ArrayList<java.util.Date>();
+		
+		try{
+			//ArrayList<String> fileData = getFileDataByLine(FootballAnalysisConstants.FPL_GW_MAP);
+			ArrayList<String> fileData = FootballAnalysisUtil.getFileDataByLine("C:\\Users\\xcxb115\\SourceCode\\FPLAnalysis\\GWSchedule.csv");
+			
+			for (int i = 0; i < fileData.size(); i++){
+				String[]tempStrings = fileData.get(i).split(",");
+				
+				//if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + FootballAnalysisConstants.FPL_GW_MAP);
+				if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + "C:\\Users\\xcxb115\\SourceCode\\FPLAnalysis\\GWSchedule.csv");
+				retVal.add(new java.util.Date(Long.parseLong(tempStrings[1])));
+			}
+		}
+		catch(Exception e){
+			System.err.println("In FootballAnalysisConstants.getGameweekDates(): " + e.toString());
+		}
+		
+		retVal.sort(null);
+		return retVal;
 	}
 }

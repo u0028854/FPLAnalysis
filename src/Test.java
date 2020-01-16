@@ -7,11 +7,15 @@ import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import baker.soccer.util.FootballAnalysisConstants;
 import baker.soccer.util.FootballAnalysisUtil;
+import baker.soccer.understat.UnderstatAction;
 
 public class Test{
 	public static void main(String args[]) throws Exception{
@@ -49,12 +53,14 @@ public class Test{
 			con.disconnect();
 		}*/
 		
-		TreeMap<Integer,java.util.Date> temp = FootballAnalysisUtil.getGameweekDates();
+		/*ArrayList<java.util.Date> temp = FootballAnalysisConstants.FPL_GAMEWEEK_DATES;
 		
-		Iterator<Integer> iterator = temp.keySet().iterator();
-		
-		while(iterator.hasNext()){
-			System.out.println(temp.get(iterator.next()));
-		}
+		for(int i=0; i < temp.size(); i++){
+			System.out.println(i + ": " + temp.get(i));
+		}*/
+
+		//System.out.println(FootballAnalysisUtil.getGameweekStart(100));
+
+		System.out.println(UnderstatAction.processPlayerJSON(2019, FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG));
 	}
 }

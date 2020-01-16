@@ -8,12 +8,10 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import baker.soccer.fpl.objects.FPLPlayerObject;
@@ -767,30 +765,29 @@ public class FootballAnalysisUtil {
 	}
 	
 	public static java.util.Date getGameweekStart(int previousGWCount) throws Exception{
-		return null;
-		
-		/*
-		 * Need to determine current gameweek and then get data starting at current GW - previosGWCount to current GW
-		 * 
-		 * Will need to figure out TreeMap
-		 */
-	}
-	
-	public static TreeMap<Integer, java.util.Date> getGameweekDates() throws Exception{
-		TreeMap<Integer, java.util.Date> retVal = new TreeMap<Integer, java.util.Date>();
-		ArrayList<String> fileData = getFileDataByLine(FootballAnalysisConstants.FPL_GW_MAP);
-		
-		for (int i = 0; i < fileData.size(); i++){
-			String[]tempStrings = fileData.get(i).split(",");
-			
-			if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + FootballAnalysisConstants.FPL_GW_MAP);
-			
-			retVal.put(new Integer(tempStrings[0]),new java.util.Date(Long.parseLong(tempStrings[1])));
-		}
-		
-		return retVal;
+		int currentGw = findCurrentGameweek(FootballAnalysisConstants.FPL_GAMEWEEK_DATES, 0, FootballAnalysisConstants.FPL_GAMEWEEK_DATES.size(), new java.util.Date());
+		return FootballAnalysisConstants.FPL_GAMEWEEK_DATES.get((currentGw - previousGWCount) < 0 ? 0 : (currentGw - previousGWCount));
 	}
 
+	private static int findCurrentGameweek(ArrayList<java.util.Date> gwArray, int arrayStart, int arrayEnd, java.util.Date gwDate){
+		int current = (arrayStart + arrayEnd) / 2;
+		int retVal = -1;
+		
+		if (current == arrayStart){
+			retVal = arrayEnd;
+		}
+		else{
+			if(gwDate.compareTo(gwArray.get(current)) < 1){
+				retVal = findCurrentGameweek(gwArray, arrayStart, current, gwDate);
+			}
+			else{
+				retVal = findCurrentGameweek(gwArray, current, arrayEnd, gwDate);
+			}
+		}
+
+		return retVal;
+	}
+	
 	public static String convertCharsetChars(String playerName) {
 		/*StringBuffer retVal = new StringBuffer("");
 		
