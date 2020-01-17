@@ -12,7 +12,6 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 //import org.apache.commons.lang3.StringEscapeUtils;
-//Download lib at https://commons.apache.org/proper/commons-text/download_text.cgi
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -1082,17 +1081,12 @@ public class FootballAnalysisAction {
 			// Check to see if Hash Map already has player object created.
 			if(localPlayerMatches.containsValue(playerStats)){
 				// If so, remove it, edit it, and re-add to hash
-				//FSPlayerMatch temp = basePlayerMatches.get(playerStats.getPlayerName() + playerStats.hashCode());
-				//temp.addAllMatchValues(playerStats.getMatchValues());
-				//basePlayerMatches.put(playerStats.getPlayerName() + playerStats.hashCode(), temp);
-
 				FSPlayerMatch temp = localPlayerMatches.get(playerStats.getPlayerName() + playerStats.getTeamName());
 				temp.addAllMatchValues(playerStats.getMatchValues());
 				localPlayerMatches.put(playerStats.getPlayerName() + playerStats.getTeamName(), temp);
 			}
 			else{
 				// If not, add to hash
-				//basePlayerMatches.put(playerStats.getPlayerName() + playerStats.hashCode(), playerStats);
 				localPlayerMatches.put(playerStats.getPlayerName() + playerStats.getTeamName(), playerStats);
 			}
 		}

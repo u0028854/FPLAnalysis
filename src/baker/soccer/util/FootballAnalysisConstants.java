@@ -743,14 +743,12 @@ public class FootballAnalysisConstants {
 		ArrayList<java.util.Date> retVal = new ArrayList<java.util.Date>();
 		
 		try{
-			//ArrayList<String> fileData = getFileDataByLine(FootballAnalysisConstants.FPL_GW_MAP);
-			ArrayList<String> fileData = FootballAnalysisUtil.getFileDataByLine("C:\\Users\\xcxb115\\SourceCode\\FPLAnalysis\\GWSchedule.csv");
+			ArrayList<String> fileData = FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_GW_MAP);
 			
 			for (int i = 0; i < fileData.size(); i++){
 				String[]tempStrings = fileData.get(i).split(",");
 				
-				//if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + FootballAnalysisConstants.FPL_GW_MAP);
-				if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + "C:\\Users\\xcxb115\\SourceCode\\FPLAnalysis\\GWSchedule.csv");
+				if (tempStrings.length != 2) throw new Exception("Gameweek Date format incorrect in " + FootballAnalysisConstants.FPL_GW_MAP);
 				retVal.add(new java.util.Date(Long.parseLong(tempStrings[1])));
 			}
 		}
