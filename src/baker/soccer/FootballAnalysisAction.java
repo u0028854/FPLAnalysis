@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
-//import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -836,6 +835,8 @@ public class FootballAnalysisAction {
 		while(playerIterator.hasNext()){
 			tempRowData = new ArrayList<ExcelCellObject>();
 			FSPlayerObject tempPlayer = playerObjects.get(playerIterator.next());
+			
+			System.out.println("FS: " + tempPlayer.getName());
 
 			HashMap<String,String> tempStatTableData = tempPlayer.getStatTableData();
 			HashMap<String,String> columnHeaderMap = FootballAnalysisConstants.EXCELPLAYERSTATMAP;
@@ -865,7 +866,7 @@ public class FootballAnalysisAction {
 						understatName = fplFsPlayerMap.get(tempPlayer.getName()).getUnderstatPlayerName();
 					}
 
-					System.out.println(understatName);
+					System.out.println("US: " + understatName);
 
 					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getUnderstatStat(consolidatedColumnHeaders.get(i), understatPlayerData.get(understatName)));
 					tempCell.setTextBold(false);
@@ -886,7 +887,7 @@ public class FootballAnalysisAction {
 						eplName = fplFsPlayerMap.get(tempPlayer.getName()).getEplPlayerName();
 					}
 
-					System.out.println(eplName);
+					System.out.println("EP: " + eplName);
 					
 					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getEPLStat(consolidatedColumnHeaders.get(i), eplPlayerData.get(eplName)));
 					tempCell.setTextBold(false);
@@ -959,7 +960,7 @@ public class FootballAnalysisAction {
 			if (fileVals.length == 6){
 				retVal.put(fileVals[0], new FPLFSMapObject(fileVals[0], fileVals[1], fileVals[2], fileVals[3], fileVals[4], fileVals[5]));
 			}
-			else{
+			else{System.out.println(fileVals);
 				throw new Exception("FileVals length is " + fileVals.length);
 			}
 		}
