@@ -36,6 +36,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import baker.soccer.fbref.FBRefAction;
+import baker.soccer.fbref.objects.FBRefPlayerObject;
 import baker.soccer.fpl.FPLUtil;
 import baker.soccer.fpl.objects.FPLPlayerObject;
 import baker.soccer.fs.objects.FSMatchReturnObject;
@@ -43,6 +45,7 @@ import baker.soccer.fs.objects.FSPlayerMatch;
 import baker.soccer.fs.objects.FSPlayerObject;
 import baker.soccer.fs.objects.FSTeamMatch;
 import baker.soccer.fs.objects.FSTeamObject;
+import baker.soccer.fs.objects.FSTeamTableObject;
 import baker.soccer.understat.UnderstatAction;
 import baker.soccer.understat.objects.UnderstatPlayerObject;
 import baker.soccer.understat.objects.UnderstatTeamObject;
@@ -95,7 +98,7 @@ public class FootballAnalysisAction {
 				MongoCollection<Document> coll = db.getCollection(FootballAnalysisConstants.MONGOPLAYERCOLLECTIONNAME);
 
 				String[] fsYears;
-
+				
 				if(years.contains("|")){
 					fsYears = years.split("\\|");
 				}
@@ -160,6 +163,7 @@ public class FootballAnalysisAction {
 
 				for (int i=0; i<fsYears.length; i++){
 					HashMap<String, FSTeamObject> teamHash = processMatchFilesController(fsYears[i], matchPlayersOption).getTeamObjects();
+					
 					Iterator<String> teamIterator = teamHash.keySet().iterator();
 
 					while (teamIterator.hasNext()){
@@ -213,7 +217,12 @@ public class FootballAnalysisAction {
 			}
 
 			// Until determine how to parameterize years, use the year fomr command line
-			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(false), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years), option), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
+			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(false), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years), option), FBRefAction.processFBRefHTML(), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
+		}
+		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_MATCH_ANALYSIS)){
+			String gameWeeks = args[2] == null ? "" : args[2];
+			
+			exportTeamTableData(processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "teamtable" + gameWeeks + ".csv");
 		}
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_ANALYSIS)){
 			/*
@@ -257,6 +266,18 @@ public class FootballAnalysisAction {
 		}
 	}
 
+	private static void exportTeamTableData(HashMap<String, FSTeamTableObject> teamData, String fileName) throws Exception {
+		String fileData = "Team,OPP Big Chances,OPP ShotsOnTarget,OPP Goals,OPP xG,Big Chances,ShotsOnTarget,Goals,xG,Games Played\n"; 
+		
+		Iterator<String> iterator = teamData.keySet().iterator();
+		
+		while(iterator.hasNext()){
+			fileData += teamData.get(iterator.next()).csvOutput() + "\n";
+		}
+		
+		FootballAnalysisUtil.writeFile(fileName, fileData);
+	}
+	
 	private static void processRenameMatchFiles(String baseFileDirectory) throws Exception{
 		Vector<String> fileList = FootballAnalysisUtil.getFiles(baseFileDirectory, true);
 
@@ -405,6 +426,88 @@ public class FootballAnalysisAction {
 
 			playerObject.setStatTableData(playerValues);
 			retVal.put(playerObject.getName(), playerObject);
+		}
+
+		parser.reset();
+
+		return retVal;
+	}
+	
+	private static HashMap<String, FSTeamTableObject> processFantScoutTeamStatTablesWorker(String fileName) throws Exception{
+		HashMap<String, FSTeamTableObject> retVal = new HashMap<String, FSTeamTableObject>();
+
+		Parser parser = new Parser (fileName);
+		parser.setEncoding("UTF-8");
+
+		// Set up node collector
+		org.htmlparser.util.NodeList nodes;
+
+		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("table[class=\"stats draggable fixed1\"]"), true), new TagNameFilter("tr"), new NotFilter(new HasChildFilter(new TagNameFilter("th"), true))};
+		nodes = parser.parse(new AndFilter(tempAndFilterArray));
+
+		for (int i = 0; i < nodes.size(); i++){
+			// Create data objects
+			FSTeamTableObject teamObject = new FSTeamTableObject();
+			
+			org.htmlparser.util.NodeList tempNodeList = new org.htmlparser.util.NodeList();
+			nodes.elementAt(i).collectInto(tempNodeList, new CssSelectorNodeFilter("td[class=\"first nowrap\"]"));
+			
+			teamObject.setTeamName(((Tag)tempNodeList.elementAt(0)).getAttribute("title"));
+
+			org.htmlparser.util.NodeList tempNodeList2 = new org.htmlparser.util.NodeList();
+
+			nodes.elementAt(i).collectInto(tempNodeList2, new AndFilter(new HasAttributeFilter("title"), new NotFilter(new HasAttributeFilter("class"))));
+
+			for (int j = 0; j < tempNodeList2.size(); j++){
+				// Get the nodes and value of attribute "title"
+				Tag statElement = (Tag)tempNodeList2.elementAt(j);
+				String tempAttrValue = StringEscapeUtils.unescapeHtml4(statElement.getAttribute("title"));
+
+				String [] tempAttrPair = tempAttrValue.split(":");
+				
+				switch(tempAttrPair[0]){
+					case "Big Chances Conceded":
+						teamObject.setBigChancesConceded(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Big Chances Created":
+						teamObject.setBigChances(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Games Played":
+						teamObject.setGamesPlayed(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Goals":
+						teamObject.setGoalsScored(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Goals Conceded":
+						teamObject.setGoalsConceded(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Shots On Target":
+						teamObject.setShotsOnTarget(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "Shots On Target Conceded":
+						teamObject.setShotsOnTargetConceded(Integer.parseInt(tempAttrPair[1].trim()));
+						break;
+					
+					case "xG Expected Goals":
+						teamObject.setxG(Float.parseFloat(tempAttrPair[1].trim()));
+						break;
+					
+					case "xG Conceded":
+						teamObject.setxGC(Float.parseFloat(tempAttrPair[1].trim()));
+						break;
+					
+					default:
+						throw new Exception("in processFantScoutTeamStatTablesWorker bad case: " + tempAttrPair[0].trim());
+				}
+			}
+
+			retVal.put(teamObject.getTeamName(), teamObject);
 		}
 
 		parser.reset();
@@ -606,11 +709,11 @@ public class FootballAnalysisAction {
 		return  matchSeason + "-" + gameWeek + "-" + teamOne + "-" + teamTwo + ".htm";
 	}
 
-	public static boolean exportTeamData(FSMatchReturnObject matchData, String weeklyFileName, String sumFilename, String gameOption, HashMap<String, UnderstatTeamObject> understatXGData) throws Exception{
+	private static boolean exportTeamData(FSMatchReturnObject matchData, String weeklyFileName, String sumFilename, String gameOption, HashMap<String, UnderstatTeamObject> understatXGData) throws Exception{
 		return exportTeamData(matchData, -1, -1, weeklyFileName, sumFilename, gameOption, understatXGData);
 	}
 
-	public static boolean exportTeamData(FSMatchReturnObject matchData, int currentWeek, int exportDuration, String weeklyFileName,  String sumFileName, String gameOption, HashMap<String, UnderstatTeamObject> understatXGData) throws Exception{
+	private static boolean exportTeamData(FSMatchReturnObject matchData, int currentWeek, int exportDuration, String weeklyFileName,  String sumFileName, String gameOption, HashMap<String, UnderstatTeamObject> understatXGData) throws Exception{
 		boolean retVal = true;
 		int gameWeekRange = -1;
 
@@ -729,14 +832,14 @@ public class FootballAnalysisAction {
 		return retVal;
 	}
 
-	public static void exportPlayerAnalysisExcel(HashMap<String, HashMap<String, FSPlayerObject>> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap, String fileName) throws Exception{
+	private static void exportPlayerAnalysisExcel(HashMap<String, HashMap<String, FSPlayerObject>> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FBRefPlayerObject> fbRefPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap, String fileName) throws Exception{
 		XSSFWorkbook outputWorkbook = new XSSFWorkbook();
 
 		Iterator<String> playerIterator = playerObjects.keySet().iterator();
 
 		while (playerIterator.hasNext()){
 			String positionName = playerIterator.next();
-			outputWorkbook = ExcelOutputUtil.buildAnalysisExcel(outputWorkbook, exportAnalysisExcelWorker(positionName, playerObjects.get(positionName), eplPlayerData, understatPlayerData, fplFsPlayerMap), positionName, FootballAnalysisConstants.EXCELBLUECOLUMNCOUNT, FootballAnalysisConstants.EXCELTOTALCOLUMNCOUNT);				
+			outputWorkbook = ExcelOutputUtil.buildAnalysisExcel(outputWorkbook, exportAnalysisExcelWorker(positionName, playerObjects.get(positionName), eplPlayerData, understatPlayerData, fbRefPlayerData, fplFsPlayerMap), positionName, FootballAnalysisConstants.EXCELBLUECOLUMNCOUNT, FootballAnalysisConstants.EXCELTOTALCOLUMNCOUNT);				
 		}
 
 		FileOutputStream out = new FileOutputStream(new File(fileName));	
@@ -745,7 +848,7 @@ public class FootballAnalysisAction {
 		outputWorkbook.close();
 	}
 
-	public static ArrayList<ArrayList<ExcelCellObject>> exportAnalysisExcelWorker(String positionName, HashMap<String, FSPlayerObject> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap) throws Exception{
+	private static ArrayList<ArrayList<ExcelCellObject>> exportAnalysisExcelWorker(String positionName, HashMap<String, FSPlayerObject> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FBRefPlayerObject> fbRefPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap) throws Exception{
 		ArrayList<ArrayList<ExcelCellObject>> excelData = new ArrayList<ArrayList<ExcelCellObject>>();
 
 		ArrayList<ExcelCellObject> tempRowData = new ArrayList<ExcelCellObject>();
@@ -820,6 +923,20 @@ public class FootballAnalysisAction {
 
 			tempRowData.add(tempCell);
 		}
+		
+		ArrayList<String> purpleColumnHeaders = FootballAnalysisConstants.EXCELPURPLECOLUMNHEADERS;
+
+		for (int i = 0; i < purpleColumnHeaders.size(); i++){
+			tempCell = new ExcelCellObject(Cell.CELL_TYPE_STRING, purpleColumnHeaders.get(i));
+			tempCell.setTextBold(true);
+			tempCell.setFontColor(FootballAnalysisConstants.TRUEWHITE);
+			tempCell.setFillColor(FootballAnalysisConstants.DEEPPURPLE);
+			tempCell.setThinBorder(true);
+			tempCell.setBorderColor(FootballAnalysisConstants.TRUEBLACK);
+			tempCell.setHorizontalAlignment(XSSFCellStyle.ALIGN_CENTER);
+
+			tempRowData.add(tempCell);
+		}
 
 		excelData.add(tempRowData);
 
@@ -829,6 +946,7 @@ public class FootballAnalysisAction {
 		consolidatedColumnHeaders.addAll(greenColumnHeaders);
 		consolidatedColumnHeaders.addAll(brownColumnHeaders);
 		consolidatedColumnHeaders.addAll(orangeColumnHeaders);
+		consolidatedColumnHeaders.addAll(purpleColumnHeaders);
 
 		Iterator<String> playerIterator = playerObjects.keySet().iterator();
 
@@ -877,11 +995,26 @@ public class FootballAnalysisAction {
 					tempCell.setHorizontalAlignment(XSSFCellStyle.ALIGN_CENTER);
 					tempCell.setDataFormat(FootballAnalysisUtil.getCellFormat(consolidatedColumnHeaders.get(i)));
 				}
+				else if(FootballAnalysisConstants.EXCELFBREFCOLUMNS.contains((consolidatedColumnHeaders.get(i)))){
+					String fbRefName = tempPlayer.getName();
+
+					if(fplFsPlayerMap.containsKey(fbRefName)){
+						fbRefName = fplFsPlayerMap.get(tempPlayer.getName()).getFBRefPlayerName();
+					}
+
+					System.out.println("FBREF: " + fbRefName);
+
+					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getFBRefStat(consolidatedColumnHeaders.get(i), fbRefPlayerData.get(fbRefName)));
+					tempCell.setTextBold(false);
+					tempCell.setFontColor(FootballAnalysisConstants.TRUEBLACK);
+					tempCell.setFillColor(FootballAnalysisConstants.TRUEWHITE);
+					tempCell.setThinBorder(true);
+					tempCell.setBorderColor(FootballAnalysisConstants.TRUEBLACK);
+					tempCell.setHorizontalAlignment(XSSFCellStyle.ALIGN_CENTER);
+					tempCell.setDataFormat(FootballAnalysisUtil.getCellFormat(consolidatedColumnHeaders.get(i)));
+				}
 				else if(FootballAnalysisConstants.EXCELEPLCOLUMNS.contains((consolidatedColumnHeaders.get(i)))){
 					String eplName = tempPlayer.getName();
-					
-					if (eplName.startsWith("Muhamed Be"))
-						break;
 					
 					if(fplFsPlayerMap.containsKey(eplName)){
 						eplName = fplFsPlayerMap.get(tempPlayer.getName()).getEplPlayerName();
@@ -957,10 +1090,11 @@ public class FootballAnalysisAction {
 		for (int i = 0; i < fileData.size(); i++){
 			String [] fileVals = fileData.get(i).split(",");
 			
-			if (fileVals.length == 6){
-				retVal.put(fileVals[0], new FPLFSMapObject(fileVals[0], fileVals[1], fileVals[2], fileVals[3], fileVals[4], fileVals[5]));
+			if (fileVals.length == 7){
+				retVal.put(fileVals[0], new FPLFSMapObject(fileVals[0], fileVals[1], fileVals[2], fileVals[3], fileVals[4], fileVals[5], fileVals[6]));
 			}
-			else{System.out.println(fileVals);
+			else if(fileVals[0].equals("")){}
+			else{
 				throw new Exception("FileVals length is " + fileVals.length);
 			}
 		}

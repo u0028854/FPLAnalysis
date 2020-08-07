@@ -3,6 +3,8 @@ package baker.soccer.fs.objects;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import baker.soccer.util.FootballAnalysisUtil;
+
 public class FSPlayerObject {
 	private String name;
 	private String playerPos;
@@ -17,7 +19,7 @@ public class FSPlayerObject {
 
 	public FSPlayerObject(String name, String fsLink){
 		this();
-		this.setName(name);
+		this.setName(FootballAnalysisUtil.stripAccents(name));
 	}
 
 	public void addTeam(String teamName){
@@ -33,7 +35,7 @@ public class FSPlayerObject {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = FootballAnalysisUtil.stripAccents(name);
 	}
 
 	public HashMap<Integer, HashMap<String,Float>> getSeasonsSum() {

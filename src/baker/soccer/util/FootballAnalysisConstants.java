@@ -20,6 +20,7 @@ public class FootballAnalysisConstants {
 	public static final String FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG = "fs_player_analysis_excel_six_week";
 	public static final String FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG = "fs_player_analysis_excel_four_week";
 	public static final String FS_TEAM_ANALYSIS = "week_team";
+	public static final String FS_TEAM_MATCH_ANALYSIS = "match_team";
 	public static final String AWAY_ONLY = "away";
 	public static final String HOME_ONLY = "home";
 
@@ -42,14 +43,17 @@ public class FootballAnalysisConstants {
 	public static final String DEF_STATS_TABLE1 = EPL_BASE_DIR + "\\stat_tables\\def.html";
 	public static final String DEF_STATS_TABLE2 = EPL_BASE_DIR + "\\stat_tables\\def2.html";
 	public static final String DEF_STATS_TABLE3 = EPL_BASE_DIR + "\\stat_tables\\def3.html";
+	public static final String TEAM_STATS_TABLE1 = EPL_BASE_DIR + "\\stat_tables\\team.html";
 	public static final String FPL_FS_PLAYER_MAP = EPL_BASE_DIR + "\\stat_tables\\player_map.csv";
 	public static final String FPL_GW_MAP = EPL_BASE_DIR + "\\stat_tables\\GWSchedule.csv";
 	public static final String STATS_TABLE_OUTPUT_FILE = EPL_BASE_DIR + "\\EPL Excels\\Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_6GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\6GW_Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_4GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\4GW_Analysis.xlsx";
-	public static final String USHTMLFILENAME = "C:\\EPLJava\\stat_tables\\understat.html";
-	public static final String USPLAYEROUTPUTFILENAME = "C:\\EPLJava\\stat_tables\\playerUnderstat.json";
-	public static final String USTEAMOUTPUTFILENAME = "C:\\EPLJava\\stat_tables\\teamUnderstat.json";
+	public static final String USHTMLFILENAME = EPL_BASE_DIR+ "\\stat_tables\\understat.html";
+	public static final String USPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.json";
+	public static final String USTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\teamUnderstat.json";
+	public static final String FBREFHTMLFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.html";
+	public static final String FBREFPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.htm";
 
 	// FPL Constants
 	public static final String FPLAPIURL = "https://fantasy.premierleague.com/api/bootstrap-static/";
@@ -90,6 +94,7 @@ public class FootballAnalysisConstants {
 	public static final XSSFColor TRUEGREEN = new XSSFColor(new Color (0,255,0));
 	public static final XSSFColor TRUEYELLOW = new XSSFColor(new Color (255,255,102));
 	public static final XSSFColor DARKGRAY = new XSSFColor(new Color (217,217,217));
+	public static final XSSFColor DEEPPURPLE = new XSSFColor(new Color (102,0,102));
 	public static final short DEFAULTEXCELFONTSIZE = 9;
 	public static final String DEFAULTEXCELFONTFAMILY = "Calibri";
 	public static final String FORMULAIDENTIFIER = "FORMULA-CELL";
@@ -168,17 +173,28 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNXPTS ="xPts/90";
 	public static final String EXCELCOLUMNBASEXPTS ="Base xPts/90";
 	public static final String EXCELCOLUMNUXG ="uXG/90";
+	public static final String EXCELCOLUMNUNPXG ="uNPXG/90";
 	public static final String EXCELCOLUMNUXA ="uXA/90";
 	public static final String EXCELCOLUMNUXPTS ="uXPTS/90";
+	public static final String EXCELCOLUMNUXNPPTS ="uXNPPTS/90";
 	public static final String EXCELCOLUMNFSXG ="fsXG";
+	public static final String EXCELCOLUMNFSNPXG ="fsNPXG";
 	public static final String EXCELCOLUMNFSXA ="fsXA";
 	public static final String EXCELCOLUMNFSXG90 ="fsXG/90";
+	public static final String EXCELCOLUMNFSNPXG90 ="fsNPXG/90";
 	public static final String EXCELCOLUMNFSXA90 ="fsXA/90";
 	public static final String EXCELCOLUMNFSXPTS90 ="fsXPTS/90";
+	public static final String EXCELCOLUMNFSNPXPTS90 ="fsNPXPTS/90";
+	public static final String EXCELCOLUMNFBREFXG ="fbrefXG/90";
+	public static final String EXCELCOLUMNFBREFNPXG ="fbrefNPXG/90";
+	public static final String EXCELCOLUMNFBREFXA ="fbrefXA/90";
+	public static final String EXCELCOLUMNFBREFXPTS ="fbrefXPTS/90";
+	public static final String EXCELCOLUMNFBREFNPXPTS ="fbrefNPXPTS/90";
 
 	// Excel Column Groupings and Data
 	public static final ArrayList<String> EXCELEPLCOLUMNS = defineExcelEPLColumns();
 	public static final ArrayList<String> EXCELUNDERSTATCOLUMNS = defineExcelUnderstatColumns();
+	public static final ArrayList<String> EXCELFBREFCOLUMNS = defineExcelFBRefColumns();
 	public static final ArrayList<String> EXCELPERCENTAGECOLUMNS = getPercentageColumns();
 	public static final ArrayList<String> EXCELWHOLENUMBERCOLUMNS = getWholeNumberColumns();
 	public static final ArrayList<String> EXCELHUNDRETHSCOLUMNS = getHundrethsColumns();
@@ -189,13 +205,15 @@ public class FootballAnalysisConstants {
 	public static final ArrayList<String> EXCELGREENCOLUMNHEADERS = getAnalysisGreenColumnHeaders();
 	public static final ArrayList<String> EXCELORANGECOLUMNHEADERS = getAnalysisOrangeColumnHeaders();
 	public static final ArrayList<String> EXCELBROWNCOLUMNHEADERS = getAnalysisBrownColumnHeaders();
+	public static final ArrayList<String> EXCELPURPLECOLUMNHEADERS = getAnalysisPurpleColumnHeaders();
 
 	public static final int EXCELBLUECOLUMNCOUNT = EXCELBLUECOLUMNHEADERS.size();
 	public static final int EXCELREDCOLUMNCOUNT = EXCELREDCOLUMNHEADERS.size();
 	public static final int EXCELGREENCOLUMNCOUNT = EXCELGREENCOLUMNHEADERS.size();
 	public static final int EXCELORANGECOLUMNCOUNT = EXCELORANGECOLUMNHEADERS.size();
 	public static final int EXCELBROWNCOLUMNCOUNT = EXCELBROWNCOLUMNHEADERS.size();
-	public static final int EXCELTOTALCOLUMNCOUNT = EXCELBLUECOLUMNCOUNT + EXCELREDCOLUMNCOUNT + EXCELGREENCOLUMNCOUNT + EXCELORANGECOLUMNCOUNT + EXCELBROWNCOLUMNCOUNT;
+	public static final int EXCELPURPLECOLUMNCOUNT = EXCELPURPLECOLUMNHEADERS.size();
+	public static final int EXCELTOTALCOLUMNCOUNT = EXCELBLUECOLUMNCOUNT + EXCELREDCOLUMNCOUNT + EXCELGREENCOLUMNCOUNT + EXCELORANGECOLUMNCOUNT + EXCELBROWNCOLUMNCOUNT + EXCELPURPLECOLUMNCOUNT;
 
 	// Excel Column Data 
 	public static final HashMap <String, String> EXCELPLAYERSTATMAP = getExcelPlayerStatTableMap();
@@ -233,6 +251,8 @@ public class FootballAnalysisConstants {
 			retVal.add(new Integer(Calendar.MARCH));
 			retVal.add(new Integer(Calendar.APRIL));
 			retVal.add(new Integer(Calendar.MAY));
+			retVal.add(new Integer(Calendar.JUNE));
+			retVal.add(new Integer(Calendar.JULY));
 		}
 		return retVal;
 	}
@@ -255,11 +275,22 @@ public class FootballAnalysisConstants {
 		ArrayList<String> retVal = new ArrayList<String>();
 
 		retVal.add(EXCELCOLUMNUXG);
+		retVal.add(EXCELCOLUMNUNPXG);
 		retVal.add(EXCELCOLUMNUXA);
 
 		return retVal;
 	}
 
+	private static final ArrayList<String> defineExcelFBRefColumns(){
+		ArrayList<String> retVal = new ArrayList<String>();
+
+		retVal.add(EXCELCOLUMNFBREFXG);
+		retVal.add(EXCELCOLUMNFBREFNPXG);
+		retVal.add(EXCELCOLUMNFBREFXA);
+
+		return retVal;
+	}
+	
 	private static ArrayList<String> getPercentageColumns(){
 		ArrayList<String> retVal = new ArrayList<String>();
 
@@ -341,13 +372,23 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNXPTS);
 		retVal.add(EXCELCOLUMNBASEXPTS);
 		retVal.add(EXCELCOLUMNUXG);
+		retVal.add(EXCELCOLUMNUNPXG);
 		retVal.add(EXCELCOLUMNUXA);
 		retVal.add(EXCELCOLUMNUXPTS);
+		retVal.add(EXCELCOLUMNUXNPPTS);
 		retVal.add(EXCELCOLUMNFSXG);
+		retVal.add(EXCELCOLUMNFSNPXG);
 		retVal.add(EXCELCOLUMNFSXA);
 		retVal.add(EXCELCOLUMNFSXG90);
+		retVal.add(EXCELCOLUMNFSNPXG90);
 		retVal.add(EXCELCOLUMNFSXA90);
 		retVal.add(EXCELCOLUMNFSXPTS90);
+		retVal.add(EXCELCOLUMNFSNPXPTS90);
+		retVal.add(EXCELCOLUMNFBREFXG);
+		retVal.add(EXCELCOLUMNFBREFNPXG);
+		retVal.add(EXCELCOLUMNFBREFXA);
+		retVal.add(EXCELCOLUMNFBREFXPTS);
+		retVal.add(EXCELCOLUMNFBREFNPXPTS);
 		return retVal;
 	}
 
@@ -434,14 +475,25 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNBASEXPTS, FORMULAIDENTIFIER);
 
 		retVal.put(EXCELCOLUMNUXG, "");
+		retVal.put(EXCELCOLUMNUNPXG, "");
 		retVal.put(EXCELCOLUMNUXA, "");
 		retVal.put(EXCELCOLUMNUXPTS, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNUXNPPTS, FORMULAIDENTIFIER);
 
 		retVal.put(EXCELCOLUMNFSXG, "xG Expected Goals");
+		retVal.put(EXCELCOLUMNFSNPXG, "xG Non Penalty");
 		retVal.put(EXCELCOLUMNFSXA, "xA Expected Assists");
 		retVal.put(EXCELCOLUMNFSXG90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNFSNPXG90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFSXA90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFSXPTS90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNFSNPXPTS90, FORMULAIDENTIFIER);
+		
+		retVal.put(EXCELCOLUMNFBREFXG, "");
+		retVal.put(EXCELCOLUMNFBREFNPXG, "");
+		retVal.put(EXCELCOLUMNFBREFXA, "");
+		retVal.put(EXCELCOLUMNFBREFXPTS, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNFBREFNPXPTS, FORMULAIDENTIFIER);
 
 		return retVal;
 	}
@@ -592,6 +644,7 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNGSOPEN);
 		retVal.add(EXCELCOLUMNGSOPENPERCENT);
 		retVal.add(EXCELCOLUMNFSXG);
+		retVal.add(EXCELCOLUMNFSNPXG);
 		retVal.add(EXCELCOLUMNFSXA);
 
 		return retVal;
@@ -641,8 +694,10 @@ public class FootballAnalysisConstants {
 		ArrayList<String> retVal = new ArrayList<String>();		
 
 		retVal.add(EXCELCOLUMNUXG);
+		retVal.add(EXCELCOLUMNUNPXG);
 		retVal.add(EXCELCOLUMNUXA);
 		retVal.add(EXCELCOLUMNUXPTS);
+		retVal.add(EXCELCOLUMNUXNPPTS);
 
 		return retVal;
 	}
@@ -651,8 +706,22 @@ public class FootballAnalysisConstants {
 		ArrayList<String> retVal = new ArrayList<String>();		
 
 		retVal.add(EXCELCOLUMNFSXG90);
+		retVal.add(EXCELCOLUMNFSNPXG90);
 		retVal.add(EXCELCOLUMNFSXA90);
 		retVal.add(EXCELCOLUMNFSXPTS90);
+		retVal.add(EXCELCOLUMNFSNPXPTS90);
+
+		return retVal;
+	}
+	
+	private static ArrayList<String> getAnalysisPurpleColumnHeaders(){
+		ArrayList<String> retVal = new ArrayList<String>();		
+
+		retVal.add(EXCELCOLUMNFBREFXG);
+		retVal.add(EXCELCOLUMNFBREFNPXG);
+		retVal.add(EXCELCOLUMNFBREFXA);
+		retVal.add(EXCELCOLUMNFBREFXPTS);
+		retVal.add(EXCELCOLUMNFBREFNPXPTS);
 
 		return retVal;
 	}

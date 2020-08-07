@@ -7,9 +7,10 @@ public class FPLFSMapObject {
 	private String eplPlayerPosition;
 	private String understatPlayerName;
 	private String understatPlayerPosition;
+	private String fbRefPlayerName;
 
 	public FPLFSMapObject(String fsPlayerName, String fsPlayerPosition,
-			String eplPlayerName, String eplPlayerPosition, String understatPlayerName, String understatPlayerPosition) {
+			String eplPlayerName, String eplPlayerPosition, String understatPlayerName, String understatPlayerPosition, String fbRefPlayerName) {
 		super();
 		this.fsPlayerName = fsPlayerName;
 		this.fsPlayerPosition = fsPlayerPosition;
@@ -17,6 +18,7 @@ public class FPLFSMapObject {
 		this.eplPlayerPosition = eplPlayerPosition;
 		this.understatPlayerName = understatPlayerName;
 		this.understatPlayerPosition = understatPlayerPosition;
+		this.fbRefPlayerName = fbRefPlayerName;
 	}
 
 	public String getFsPlayerName() {
@@ -66,12 +68,20 @@ public class FPLFSMapObject {
 	public void setUnderstatPlayerPosition(String understatPlayerPosition) {
 		this.understatPlayerPosition = understatPlayerPosition;
 	}
+	
+	public String getFBRefPlayerName() {
+		return fbRefPlayerName;
+	}
+
+	public void getFBRefPlayerName(String fbRefPlayerName) {
+		this.fbRefPlayerName = fbRefPlayerName;
+	}
 
 	@Override
 	public String toString() {
 		return "FPLFSMapObject [fsPlayerName=" + fsPlayerName + ", fsPlayerPosition=" + fsPlayerPosition
 				+ ", eplPlayerName=" + eplPlayerName + ", eplPlayerPosition=" + eplPlayerPosition
 				+ ", understatPlayerName=" + understatPlayerName + ", understatPlayerPosition="
-				+ understatPlayerPosition + "]";
+				+ understatPlayerPosition + ", fbRefPlayerName=" + fbRefPlayerName + "]";
 	}
 }

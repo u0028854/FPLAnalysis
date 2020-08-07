@@ -60,7 +60,7 @@ public class FPLPlayerObject {
 		return first_name;
 	}
 	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
+		this.first_name = FootballAnalysisUtil.stripAccents(first_name);
 	}
 	public int getGoals_conceded() {
 		return goals_conceded;
@@ -120,7 +120,7 @@ public class FPLPlayerObject {
 		return second_name;
 	}
 	public void setSecond_name(String second_name) {
-		this.second_name = second_name;
+		this.second_name = FootballAnalysisUtil.stripAccents(second_name);
 	}
 	public float getSelected_by_percent() {
 		return Float.parseFloat(selected_by_percent);
@@ -194,11 +194,6 @@ public class FPLPlayerObject {
 
 	public String getPlayerName(){
 		return first_name + " " + second_name;
-	}
-	
-	public void cleanName(){
-		this.first_name = FootballAnalysisUtil.convertCharsetChars(this.first_name);
-		this.second_name = FootballAnalysisUtil.convertCharsetChars(this.second_name);
 	}
 	
 	@Override

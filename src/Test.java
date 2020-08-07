@@ -1,21 +1,8 @@
-/*import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeMap;*/
+import org.apache.commons.lang3.StringUtils;
 
+import baker.soccer.FootballAnalysisAction;
 import baker.soccer.util.FootballAnalysisConstants;
-//import baker.soccer.util.FootballAnalysisUtil;
-import baker.soccer.understat.UnderstatAction;
+import baker.soccer.util.FootballAnalysisUtil;
 
 public class Test{
 	public static void main(String args[]) throws Exception{
@@ -61,6 +48,6 @@ public class Test{
 
 		//System.out.println(FootballAnalysisUtil.getGameweekStart(100));
 
-		System.out.println(UnderstatAction.processPlayerJSON(2019, FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG));
+		FootballAnalysisAction.exportTeamTableData(FootballAnalysisAction.processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1));
 	}
 }

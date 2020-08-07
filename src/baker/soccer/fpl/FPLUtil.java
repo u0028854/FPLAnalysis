@@ -11,7 +11,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import baker.soccer.fpl.objects.FPLBaseJSONData;
 import baker.soccer.fpl.objects.FPLPlayerObject;
 import baker.soccer.util.FootballAnalysisConstants;
-import baker.soccer.util.FootballAnalysisUtil;
 
 public class FPLUtil {
 	public static HashMap<String, FPLPlayerObject> processEPLPlayerSeasonAction(boolean outputData) throws Exception{
@@ -41,8 +40,7 @@ public class FPLUtil {
 
 			while(iterator.hasNext()){
 				FPLPlayerObject tempPlayer = iterator.next();
-				tempPlayer.cleanName();
-				retVal.put(FootballAnalysisUtil.convertCharsetChars(tempPlayer.getPlayerName()), tempPlayer);
+				retVal.put(tempPlayer.getPlayerName(), tempPlayer);
 			}
 		}
 		catch(Exception e){

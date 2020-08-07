@@ -28,20 +28,11 @@ import baker.soccer.util.FootballAnalysisUtil;
 
 public class UnderstatAction {
 	public static void main(String [] args) throws Exception{
-		HashMap<String, UnderstatPlayerObject> temp = UnderstatAction.processUnderstatXGPlayerJSON(FootballAnalysisConstants.EPL_SEASONS[FootballAnalysisConstants.EPL_SEASONS.length - 1], FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_ARG);
-
-		Iterator<String> iterator = temp.keySet().iterator();
-
-		while(iterator.hasNext()){
-			UnderstatPlayerObject tempPlayer = temp.get(iterator.next());
-
-			System.out.println(tempPlayer.getPlayer_name() + " xg: " + tempPlayer.getxG90() + " npxg:" + tempPlayer.getnpxG90() + " xa: " + tempPlayer.getxA90());
-		}
 	}
 
 	private static void processUnderstatHTML(int option) throws Exception{
 		Parser parser = new Parser(FootballAnalysisConstants.USHTMLFILENAME);
-		parser.setEncoding("UTF-8");
+		parser.setEncoding("UTF-32");
 
 		HasAttributeFilter siblingAttribute = (option == FootballAnalysisConstants.USPLAYERS ? new HasAttributeFilter("id", "league-players") : new HasAttributeFilter("data-scheme", "chart"));
 
@@ -78,7 +69,7 @@ public class UnderstatAction {
 		return processTeamJSON(FootballAnalysisConstants.USTEAMOUTPUTFILENAME);
 	}
 
-	public static HashMap<String, UnderstatPlayerObject> processPlayerJSON(int eplSeason, String option) throws Exception{
+	private static HashMap<String, UnderstatPlayerObject> processPlayerJSON(int eplSeason, String option) throws Exception{
 		HashMap<String, UnderstatPlayerObject> retVal = new HashMap<String, UnderstatPlayerObject>();
 
 		//create ObjectMapper instance
@@ -101,6 +92,7 @@ public class UnderstatAction {
 
 		try {
 			URL myurl = new URL(FootballAnalysisConstants.USAPIURL);
+			
 			con = (HttpURLConnection) myurl.openConnection();
 			con.setDoOutput(true);
 			con.setRequestMethod("POST");
@@ -130,7 +122,7 @@ public class UnderstatAction {
 		return retVal;
 	}
 
-	public static HashMap<String, UnderstatTeamObject> processTeamJSON(String jsonInputFile) throws Exception{
+	private static HashMap<String, UnderstatTeamObject> processTeamJSON(String jsonInputFile) throws Exception{
 		HashMap<String, UnderstatTeamObject> retVal = new HashMap<String, UnderstatTeamObject>();
 		UnderstatTeamObject newTeamObject;
 
