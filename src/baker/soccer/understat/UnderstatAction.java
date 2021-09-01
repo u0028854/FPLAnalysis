@@ -28,22 +28,23 @@ import baker.soccer.util.FootballAnalysisUtil;
 
 public class UnderstatAction {
 	public static void main(String [] args) throws Exception{
+		processUnderstatHTML(FootballAnalysisConstants.USTEAMS);
 	}
 
 	private static void processUnderstatHTML(int option) throws Exception{
 		Parser parser = new Parser(FootballAnalysisConstants.USHTMLFILENAME);
-		parser.setEncoding("UTF-32");
+		parser.setEncoding("UTF-8");
 
 		HasAttributeFilter siblingAttribute = (option == FootballAnalysisConstants.USPLAYERS ? new HasAttributeFilter("id", "league-players") : new HasAttributeFilter("data-scheme", "chart"));
 
 		// Set up node collector
 		org.htmlparser.util.NodeList nodes;
 
-		// Look for all nodes that have an ancestor with id = team-tabs-1:8
+		// Look for all nodes that are script tags and have an sibling attribute as defined above
 		NodeFilter [] scriptArray = {new HasSiblingFilter(siblingAttribute), new TagNameFilter("script")};
-
+		
 		nodes = parser.parse(new AndFilter(scriptArray));
-
+		
 		String xGJSONText = nodes.elementAt(0).getChildren().elementAt(0).getText().trim();
 		xGJSONText = xGJSONText.replaceAll("\\\\x20"," ").replaceAll("\\\\x2D","-").replaceAll("\\\\x22","\"").replaceAll("\\\\x3A",":").replaceAll("\\\\x5B","[").replaceAll("\\\\x5D","]").replaceAll("\\\\x7B","{").replaceAll("\\\\x7D","}");
 
@@ -84,7 +85,7 @@ public class UnderstatAction {
 		}
 		
 		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) || option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
-			urlParameters += "&date_start=" + (new SimpleDateFormat("YYYY-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + "+00%3A00%3A00");
+			urlParameters += "&date_start=" + (new SimpleDateFormat("yyyy-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + "+00%3A00%3A00");
 		}
 		
 		System.out.println(urlParameters);

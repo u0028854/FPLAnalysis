@@ -1,6 +1,22 @@
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.NavigableSet;
+import java.util.Random;
+import java.util.SortedMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.io.*;
+import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+
+import javax.script.*;
+
 import baker.soccer.FootballAnalysisAction;
+import baker.soccer.fpl.FPLUtil;
 import baker.soccer.util.FootballAnalysisConstants;
 import baker.soccer.util.FootballAnalysisUtil;
 
@@ -48,6 +64,35 @@ public class Test{
 
 		//System.out.println(FootballAnalysisUtil.getGameweekStart(100));
 
-		FootballAnalysisAction.exportTeamTableData(FootballAnalysisAction.processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1));
+		//FootballAnalysisAction.exportTeamTableData(FootballAnalysisAction.processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1));
+		/*System.out.println(new java.util.Date(Long.parseLong("1609128000000")));
+		System.out.println(FootballAnalysisUtil.getGameweekStart(6));
+		
+		SimpleDateFormat temp = new SimpleDateFormat("YYYY-MM-dd");
+		temp.setLenient(false);
+		Calendar cal = temp.getCalendar();
+		cal.setTime(FootballAnalysisUtil.getGameweekStart(6));
+		System.out.println(cal.getTime());
+		System.out.println(temp.format(cal.getTime()));
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd").format(FootballAnalysisUtil.getGameweekStart(6)) + "+00%3A00%3A00");*/
+		
+//		Random random = new Random(new java.util.Date().getTime());
+//		int iterationCount = random.nextInt() % 10;
+//		
+//		ConcurrentSkipListMap<Float, String> leagueList = new ConcurrentSkipListMap<Float, String>();
+//		String[] teamList = {"All That Ales You","stpauler","Wiseowl65","Sir Patrick Bamford"};
+//		Random rand = new Random(new java.util.Date().getTime());
+//		
+//		for (int i = 0; i < teamList.length; i++){
+//			for(int j = 0; j < iterationCount; j++) rand.nextFloat();
+//			leagueList.put(rand.nextFloat(), teamList[i]);
+//		}
+//		
+//		Iterator<Float> orderedTeams = leagueList.descendingKeySet().iterator();
+//		
+//		while(orderedTeams.hasNext())
+//			System.out.println(leagueList.get(orderedTeams.next()));
+		
+		System.out.println(FootballAnalysisConstants.FPLPLAYERJSON);
 	}
 }

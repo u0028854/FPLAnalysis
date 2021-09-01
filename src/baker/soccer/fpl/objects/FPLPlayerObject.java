@@ -5,6 +5,7 @@ import baker.soccer.util.FootballAnalysisUtil;
 public class FPLPlayerObject {
 	private String first_name;
 	private String second_name;
+	private String player_name;
 	private int assists;
 	private int bonus;
 	private int bps;
@@ -135,7 +136,7 @@ public class FPLPlayerObject {
 		case(2):
 			return "AVL";
 		case(3):
-			return "BOU";
+			return "BRE";
 		case(4):
 			return "BHA";
 		case(5):
@@ -147,19 +148,19 @@ public class FPLPlayerObject {
 		case(8):
 			return "EVE";
 		case(9):
-			return "LEI";
+			return "LEE";
 		case(10):
-			return "LIV";
+			return "LEI";
 		case(11):
-			return "MCI";
+			return "LIV";
 		case(12):
-			return "MUN";
+			return "MCI";
 		case(13):
-			return "NEW";
+			return "MUN";
 		case(14):
-			return "NOR";
+			return "NEW";
 		case(15):
-			return "SHU";
+			return "NOR";
 		case(16):
 			return "SOU";
 		case(17):
@@ -191,14 +192,18 @@ public class FPLPlayerObject {
 	public void setYellow_cards(int yellow_cards) {
 		this.yellow_cards = yellow_cards;
 	}
+	
+	public void setPlayerName(String player_name){
+		this.player_name = player_name;
+	}
 
 	public String getPlayerName(){
-		return first_name + " " + second_name;
+		return player_name;
 	}
 	
 	@Override
 	public String toString() {
-		return "FPLPlayerObject [first_name=" + first_name + ", second_name=" + second_name + ", assists="
+		return "FPLPlayerObject [player_name=" + player_name + ", first_name=" + first_name + ", second_name=" + second_name + ", assists="
 				+ assists + ", bonus=" + bonus + ", bps=" + bps + ", clean_sheets=" + clean_sheets
 				+ ", cost_change_start=" + cost_change_start + ", goals_conceded=" + goals_conceded
 				+ ", goals_scored=" + goals_scored + ", minutes=" + minutes + ", now_cost=" + now_cost

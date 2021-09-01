@@ -61,7 +61,7 @@ public class FSPlayerMatch extends FSMatchObject{
 		switch(this.playerPos){
 		case "Goalkeeper":
 			return (this.getMatchValue(FootballAnalysisConstants.FPLMINS) >= 60 ? 2.0f : 1.0f) + (this.getMatchValue(FootballAnalysisConstants.FPLASSISTS) * 3) + (this.getMatchValue(FootballAnalysisConstants.FPLGS) * 6) + (this.getMatchValue(FootballAnalysisConstants.FPLCS) * 4) + (float)Math.floor(this.getMatchValue(FootballAnalysisConstants.FPLSV) / 3) - 
-					(float)Math.floor(this.getMatchValue(FootballAnalysisConstants.FPLGC) / 2) + (this.getMatchValue(FootballAnalysisConstants.FPLYCS) * -1) + (this.getMatchValue(FootballAnalysisConstants.FPLRCS) * -3) + (float)this.bonusPoints;
+					(float)Math.floor(this.getMatchValue(FootballAnalysisConstants.FPLGC) / 2) + (this.getMatchValue(FootballAnalysisConstants.FPLYCS) * -1) + (this.getMatchValue(FootballAnalysisConstants.FPLRCS) * -3) + + (this.getMatchValue(FootballAnalysisConstants.FPLPENSVS) * 5) + (float)this.bonusPoints;
 
 		case "Defender":
 			return (this.getMatchValue(FootballAnalysisConstants.FPLMINS) >= 60 ? 2.0f : 1.0f) + (this.getMatchValue(FootballAnalysisConstants.FPLASSISTS) * 3) + (this.getMatchValue(FootballAnalysisConstants.FPLGS) * 6) + (this.getMatchValue(FootballAnalysisConstants.FPLCS) * 4) - (float)Math.floor(this.getMatchValue(FootballAnalysisConstants.FPLGC) / 2) 

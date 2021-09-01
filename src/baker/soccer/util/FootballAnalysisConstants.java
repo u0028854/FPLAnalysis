@@ -25,7 +25,7 @@ public class FootballAnalysisConstants {
 	public static final String HOME_ONLY = "home";
 
 	// Data set constants
-	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019};
+	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021};
 	public static final String[] PLAYER_POSITIONS = {"DEF", "FWD", "MID"};
 	public static final ArrayList<Integer> EPL_FIRST_HALF_MONTHS = getCalendarMonths(true);
 	public static final ArrayList<Integer> EPL_SECOND_HALF_MONTHS = getCalendarMonths(false);
@@ -52,9 +52,14 @@ public class FootballAnalysisConstants {
 	public static final String USHTMLFILENAME = EPL_BASE_DIR+ "\\stat_tables\\understat.html";
 	public static final String USPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.json";
 	public static final String USTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\teamUnderstat.json";
-	public static final String FBREFHTMLFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.html";
 	public static final String FBREFPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.htm";
-
+	public static final String FBREFTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref_team.htm";
+	public static final String FBREFHTMLPLAYERFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.html";
+	public static final String FBREFHTMLTEAMFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref_team.html";
+	public static final String FPLPLAYERJSON = EPL_BASE_DIR + "\\stat_tables\\fpl.json";
+	public static final String FPLPLAYERFOURWEEKJSON = EPL_BASE_DIR + "\\stat_tables\\4weeks_fpl.json";
+	public static final String FPLPLAYERSIXWEEKJSON = EPL_BASE_DIR + "\\stat_tables\\6weeks_fpl.json";
+	
 	// FPL Constants
 	public static final String FPLAPIURL = "https://fantasy.premierleague.com/api/bootstrap-static/";
 
@@ -67,7 +72,6 @@ public class FootballAnalysisConstants {
 	public static final int USTEAMS = 2;
 	public static final String USAPIURL = "https://understat.com/main/getPlayersStats/";
 	public static final String[] USAPIPARAMS = {"league=EPL"};
-
 
 	// Database insert constants
 	public static final String MATCH_PLAYERS_PRUNED_VALUES = "player_pruned";
@@ -95,6 +99,7 @@ public class FootballAnalysisConstants {
 	public static final XSSFColor TRUEYELLOW = new XSSFColor(new Color (255,255,102));
 	public static final XSSFColor DARKGRAY = new XSSFColor(new Color (217,217,217));
 	public static final XSSFColor DEEPPURPLE = new XSSFColor(new Color (102,0,102));
+	public static final XSSFColor DEEPBLUE = new XSSFColor(new Color (31,78,120));
 	public static final short DEFAULTEXCELFONTSIZE = 9;
 	public static final String DEFAULTEXCELFONTFAMILY = "Calibri";
 	public static final String FORMULAIDENTIFIER = "FORMULA-CELL";
@@ -190,6 +195,11 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNFBREFXA ="fbrefXA/90";
 	public static final String EXCELCOLUMNFBREFXPTS ="fbrefXPTS/90";
 	public static final String EXCELCOLUMNFBREFNPXPTS ="fbrefNPXPTS/90";
+	public static final String EXCELCOLUMNAVGXG ="avgXG/90";
+	public static final String EXCELCOLUMNAVGNPXG ="avgNPXG/90";
+	public static final String EXCELCOLUMNAVGXA ="avgXA/90";
+	public static final String EXCELCOLUMNAVGXPTS ="avgXPTS/90";
+	public static final String EXCELCOLUMNAVGNPXPTS ="avgNPXPTS/90";
 
 	// Excel Column Groupings and Data
 	public static final ArrayList<String> EXCELEPLCOLUMNS = defineExcelEPLColumns();
@@ -206,6 +216,7 @@ public class FootballAnalysisConstants {
 	public static final ArrayList<String> EXCELORANGECOLUMNHEADERS = getAnalysisOrangeColumnHeaders();
 	public static final ArrayList<String> EXCELBROWNCOLUMNHEADERS = getAnalysisBrownColumnHeaders();
 	public static final ArrayList<String> EXCELPURPLECOLUMNHEADERS = getAnalysisPurpleColumnHeaders();
+	public static final ArrayList<String> EXCELDEEPBLUECOLUMNHEADERS = getAnalysisDeepBlueColumnHeaders();
 
 	public static final int EXCELBLUECOLUMNCOUNT = EXCELBLUECOLUMNHEADERS.size();
 	public static final int EXCELREDCOLUMNCOUNT = EXCELREDCOLUMNHEADERS.size();
@@ -213,7 +224,8 @@ public class FootballAnalysisConstants {
 	public static final int EXCELORANGECOLUMNCOUNT = EXCELORANGECOLUMNHEADERS.size();
 	public static final int EXCELBROWNCOLUMNCOUNT = EXCELBROWNCOLUMNHEADERS.size();
 	public static final int EXCELPURPLECOLUMNCOUNT = EXCELPURPLECOLUMNHEADERS.size();
-	public static final int EXCELTOTALCOLUMNCOUNT = EXCELBLUECOLUMNCOUNT + EXCELREDCOLUMNCOUNT + EXCELGREENCOLUMNCOUNT + EXCELORANGECOLUMNCOUNT + EXCELBROWNCOLUMNCOUNT + EXCELPURPLECOLUMNCOUNT;
+	public static final int EXCELDEEPBLUECOLUMNCOUNT = EXCELDEEPBLUECOLUMNHEADERS.size();
+	public static final int EXCELTOTALCOLUMNCOUNT = EXCELBLUECOLUMNCOUNT + EXCELREDCOLUMNCOUNT + EXCELGREENCOLUMNCOUNT + EXCELORANGECOLUMNCOUNT + EXCELBROWNCOLUMNCOUNT + EXCELPURPLECOLUMNCOUNT + EXCELDEEPBLUECOLUMNCOUNT;
 
 	// Excel Column Data 
 	public static final HashMap <String, String> EXCELPLAYERSTATMAP = getExcelPlayerStatTableMap();
@@ -233,6 +245,7 @@ public class FootballAnalysisConstants {
 	public static final String FSBPSHEADER = "BPS";
 	public static final String FPLYCS = "Premier League Yellow Cards";
 	public static final String FPLRCS = "Premier League Total Red Cards";
+	public static final String FPLPENSVS = "Saves From Penalty";
 
 
 	private static final ArrayList<Integer> getCalendarMonths (boolean firstHalf){
@@ -389,6 +402,11 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNFBREFXA);
 		retVal.add(EXCELCOLUMNFBREFXPTS);
 		retVal.add(EXCELCOLUMNFBREFNPXPTS);
+		retVal.add(EXCELCOLUMNAVGXG);
+		retVal.add(EXCELCOLUMNAVGNPXG);
+		retVal.add(EXCELCOLUMNAVGXA);
+		retVal.add(EXCELCOLUMNAVGXPTS);
+		retVal.add(EXCELCOLUMNAVGNPXPTS);
 		return retVal;
 	}
 
@@ -494,6 +512,12 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNFBREFXA, "");
 		retVal.put(EXCELCOLUMNFBREFXPTS, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFBREFNPXPTS, FORMULAIDENTIFIER);
+		
+		retVal.put(EXCELCOLUMNAVGXG, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNAVGNPXG, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNAVGXA, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNAVGXPTS, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNAVGNPXPTS, FORMULAIDENTIFIER);
 
 		return retVal;
 	}
@@ -506,7 +530,8 @@ public class FootballAnalysisConstants {
 		retVal.add(FootballAnalysisConstants.FPLGS);
 		retVal.add(FootballAnalysisConstants.FPLSV);
 		retVal.add(FootballAnalysisConstants.FPLMINS);
-
+		retVal.add(FootballAnalysisConstants.FPLPENSVS);
+		
 		retVal.add("Appearances");
 		retVal.add("Assists");
 		retVal.add("Attempts From Set Plays");
@@ -726,6 +751,18 @@ public class FootballAnalysisConstants {
 		return retVal;
 	}
 
+	private static ArrayList<String> getAnalysisDeepBlueColumnHeaders(){
+		ArrayList<String> retVal = new ArrayList<String>();		
+
+		retVal.add(EXCELCOLUMNAVGXG);
+		retVal.add(EXCELCOLUMNAVGNPXG);
+		retVal.add(EXCELCOLUMNAVGXA);
+		retVal.add(EXCELCOLUMNAVGXPTS);
+		retVal.add(EXCELCOLUMNAVGNPXPTS);
+
+		return retVal;
+	}
+	
 	private static String getTeamMatchHeaders(){
 		return "Team,"
 				+ "Opp,"
@@ -782,29 +819,63 @@ public class FootballAnalysisConstants {
 
 	public static String mapUnderstatTeamName(String fsTeamName){
 		switch(fsTeamName){
-		case "Brighton and Hove Albion":
-			return "Brighton";
-
-		case "Cardiff City":
-			return "Cardiff";
-
-		case "Huddersfield Town":
-			return "Huddersfield";
-
-		case "Leicester City":
-			return "Leicester";
-
-		case "Norwich City":
-			return "Norwich";
-
-		case "Tottenham Hotspur":
-			return "Tottenham";
-
-		case "West Ham United":
-			return "West Ham";
-
-		default:
-			return fsTeamName;
+			case "Brighton and Hove Albion":
+				return "Brighton";
+	
+			case "Cardiff City":
+				return "Cardiff";
+	
+			case "Huddersfield Town":
+				return "Huddersfield";
+	
+			case "Leeds United":
+				return "Leeds";
+			
+			case "Leicester City":
+				return "Leicester";
+	
+			case "Norwich City":
+				return "Norwich";
+	
+			case "Tottenham Hotspur":
+				return "Tottenham";
+	
+			case "West Ham United":
+				return "West Ham";
+	
+			default:
+				return fsTeamName;
+		}
+	}
+	
+	public static String mapFBRefTeamName(String fsTeamName){
+		switch(fsTeamName){
+			case "Brighton and Hove Albion":
+				return "Brighton";
+			
+			case "Manchester United":
+				return "Manchester Utd";
+			
+			case "Newcastle United":
+				return "Newcastle Utd";
+			
+			case "Sheffield United":
+				return "Sheffield Utd";
+			
+			case "Tottenham Hotspur":
+				return "Tottenham";
+	
+			case "West Bromwich Albion":
+				return "West Brom";
+	
+			case "West Ham United":
+					return "West Ham";
+	
+			case "Wolverhampton Wanderers":
+				return "Wolves";
+	
+			default:
+				return fsTeamName;
 		}
 	}
 

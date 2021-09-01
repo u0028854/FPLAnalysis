@@ -1,6 +1,5 @@
 package baker.soccer.fbref;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -13,19 +12,21 @@ import org.htmlparser.filters.HasChildFilter;
 import org.htmlparser.filters.HasParentFilter;
 import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.util.NodeList;
 
 import baker.soccer.fbref.objects.FBRefPlayerObject;
+import baker.soccer.fbref.objects.FBRefTeamObject;
 import baker.soccer.util.FootballAnalysisConstants;
 import baker.soccer.util.FootballAnalysisUtil;
 
 public class FBRefAction {
 
 	public static void main(String[] args) throws Exception{
-		System.out.print(processFBRefHTML());
+		System.out.print(processFBRefTeamHTML());
 	}
 	
-	public static HashMap<String, FBRefPlayerObject> processFBRefHTML() throws Exception{
-		processFBRefBaseHTML();
+	public static HashMap<String, FBRefPlayerObject> processFBRefPlayerHTML() throws Exception{
+		FootballAnalysisUtil.removeHTMLComments(FootballAnalysisConstants.FBREFHTMLPLAYERFILENAME, FootballAnalysisConstants.FBREFPLAYEROUTPUTFILENAME);
 		
 		HashMap<String, FBRefPlayerObject> retVal = new HashMap<String, FBRefPlayerObject>();
 		
@@ -88,19 +89,35 @@ public class FBRefAction {
 		parser.reset();
 		return retVal;
 	}
+	
+	public static HashMap<String, FBRefTeamObject> processFBRefTeamHTML() throws Exception{
+		//FootballAnalysisUtil.removeHTMLComments(FootballAnalysisConstants.FBREFHTMLTEAMFILENAME, FootballAnalysisConstants.FBREFTEAMOUTPUTFILENAME);
+		
+		HashMap<String, FBRefTeamObject> retVal = new HashMap<String, FBRefTeamObject>();
+		
+		Parser parser = new Parser (FootballAnalysisConstants.FBREFHTMLTEAMFILENAME);
+		parser.setEncoding("UTF-8");
 
-	private static void processFBRefBaseHTML() throws Exception{
-		ArrayList<String> baseByLine = FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FBREFHTMLFILENAME);
-		String outputData = "";
+		// Set up node collector
+		org.htmlparser.util.NodeList nodes;
+
+		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("td[data-stat=\"squad\"]")), new TagNameFilter("a")};
+		nodes = parser.parse(new AndFilter(tempAndFilterArray));
 		
-		for(int i=0; i < baseByLine.size(); i++){
-			String tempString = baseByLine.get(i);
+		for (int i = 0; i < 20; i++){
+			NodeList parentNode = nodes.elementAt(i).getParent().getParent().getChildren();
+
+			// Create data objects
+			FBRefTeamObject teamObject = new FBRefTeamObject();
 			
-			tempString = tempString.replace("<!--", "").replace("-->", "");
+			teamObject.setTeamName(parentNode.elementAt(1).getChildren().elementAt(2).getChildren().elementAt(0).getText().trim());
+			teamObject.setxG(Float.parseFloat(parentNode.elementAt(10).getFirstChild() == null ? "0" : parentNode.elementAt(10).getFirstChild().getText()));
+			teamObject.setxGC(Float.parseFloat(parentNode.elementAt(11).getFirstChild() == null ? "0" : parentNode.elementAt(11).getFirstChild().getText()));
 			
-			outputData += tempString;
+			retVal.put(teamObject.getTeamName(), teamObject);
 		}
-		
-		FootballAnalysisUtil.writeFile(FootballAnalysisConstants.FBREFPLAYEROUTPUTFILENAME, outputData);
+
+		parser.reset();
+		return retVal;
 	}
 }
