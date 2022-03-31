@@ -2,40 +2,64 @@
 
 var unirest = require("unirest");
 var fs = require("fs");
-const { Console } = require("console");
-const { mainModule } = require("process");
+//const { Console } = require("console");
+const { argv } = require('process');
 
 var fileName = "ChipUsage.csv";
 var urlBase = 'https://fantasy.premierleague.com/api/leagues-classic/314/standings/?page_standings=';
 let teamsProcessed = 0;
 
-let chipTracker = new Map();
+let chipTracker = setChipTracker();
 
-    chipTracker.set('BB',0);
-    chipTracker.set('BBFH',0);
-    chipTracker.set('BBFHFH',0);
-    chipTracker.set('BBFHFH3XC',0);
-    chipTracker.set('BBFHFH3XCWC',0);
-    chipTracker.set('BBFH',0);
-    chipTracker.set('BBFH3XC',0);
-    chipTracker.set('BBFH3XCWC',0);
-    chipTracker.set('BBFHWC',0);
-    chipTracker.set('BB3XC',0);
-    chipTracker.set('BB3XCWC',0);
-    chipTracker.set('BBWC',0);
-    chipTracker.set('FH',0);
-    chipTracker.set('FHFH',0);
-    chipTracker.set('FHFH3XC',0);
-    chipTracker.set('FHFH3XCWC',0);
-    chipTracker.set('FH3XC',0);
-    chipTracker.set('FH3XCWC',0);
-    chipTracker.set('FHWC',0);
-    chipTracker.set('FH',0);
-    chipTracker.set('FH3XC',0);
-    chipTracker.set('FH3XCWC',0);
-    chipTracker.set('FHWC',0);
-    chipTracker.set('3XC',0);
-    chipTracker.set('3XCWC',0);
+function setChipTracker(){
+    let retVal = new Map();
+
+    retVal.set('BB',0);
+    retVal.set('BBFH',0);
+    retVal.set('BBFHFH',0);
+    retVal.set('BBFHFHTXC',0);
+    retVal.set('BBFHFHTXCWC',0);
+    retVal.set('BBFHFHWC',0);
+    retVal.set('BBFH',0);
+    retVal.set('BBFHTXC',0);
+    retVal.set('BBFHTXCWC',0);
+    retVal.set('BBFHWC',0);
+    retVal.set('BBTXC',0);
+    retVal.set('BBTXCWC',0);
+    retVal.set('BBWC',0);
+    retVal.set('FH',0);
+    retVal.set('FHFH',0);
+    retVal.set('FHFHTXC',0);
+    retVal.set('FHFHWC',0);
+    retVal.set('FHFHTXCWC',0);
+    retVal.set('FHTXC',0);
+    retVal.set('FHTXCWC',0);
+    retVal.set('FHWC',0);
+    retVal.set('FH',0);
+    retVal.set('FHTXC',0);
+    retVal.set('FHTXCWC',0);
+    retVal.set('FHWC',0);
+    retVal.set('TXC',0);
+    retVal.set('TXCWC',0);
+    retVal.set('TXCFH',0);
+    retVal.set('WC',0);
+
+    try {
+        const data = fs.readFileSync(fileName, 'utf8');
+        
+        if(data && data != ''){
+            let tempObj = JSON.parse(data);
+        
+            for (const [key, value] of Object.entries(tempObj)){
+                retVal.set(key, retVal.get(key) + value);
+            }
+        }
+    } catch (err) {
+        console.error(err)
+    }
+    
+    return retVal;
+}
 
 async function getURLData(url){
     return unirest.get(url);
@@ -43,7 +67,7 @@ async function getURLData(url){
 
 async function getTeamChips(teamData){
     let teamChips = teamData.toJSON().body.chips;
-    let teamChipTracker = ['WC', 'FH', 'FH', 'BB', '3XC'];
+    let teamChipTracker = ['WC', 'FH', 'FH', 'BB', 'TXC'];
     
     for(let k = 0; k < teamChips.length; k++){
         switch (teamChips[k].name) {
@@ -59,7 +83,7 @@ async function getTeamChips(teamData){
                 teamChipTracker[teamChipTracker.indexOf('BB')] = null;
                 break;
             case '3xc':
-                teamChipTracker[teamChipTracker.indexOf('3XC')] = null;
+                teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
                 break;
         }
     }
@@ -87,14 +111,14 @@ async function getTeamChips(teamData){
     return chipTracker;
 }
 
-async function execute(){
+async function execute(startPageNumber, endPageNumber){
     let retVal;
-    for(let j = 1; j <= 200; j++){
+    for(let j = startPageNumber; j <= endPageNumber; j++){
         let res = await getURLData(urlBase + j);
         let jsonArray = res.toJSON().body.standings.results;
 
         for (let i = 0; i < jsonArray.length; i++){
-            console.log('Processing team ' + ++teamsProcessed);
+            console.log('Processing team ' + jsonArray[i].entry);
             let teamData = await getURLData('https://fantasy.premierleague.com/api/entry/' + jsonArray[i].entry + '/history/');
             retVal = await getTeamChips(teamData);
         }
@@ -104,11 +128,24 @@ async function execute(){
 }
 
 async function main(){
-    let localChipTracker = await execute();
+    let startPageNumber = 1;
+    let endPageNumber = 2000;
+    if(argv && argv.length === 4){
+        startPageNumber = argv[2];
+        endPageNumber = argv[3];
 
-    console.log(localChipTracker);
+        if(startPageNumber > endPageNumber){
+            startPageNumber = endPageNumber;
+        }
+    }
+
+    let localChipTracker = await execute(startPageNumber, endPageNumber);
+
+    try{
+        fs.writeFileSync(fileName, JSON.stringify(Object.fromEntries(localChipTracker)));
+    } catch (err){
+        console.errror(err);
+    }
 }
 
 main();
-
-//getTeamChips().then((data) => outputTeamChips(data));
