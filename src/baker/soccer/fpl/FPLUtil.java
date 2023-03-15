@@ -17,9 +17,15 @@ import baker.soccer.util.FootballAnalysisConstants;
 
 public class FPLUtil {
 	public static HashMap<String, FPLPlayerObject> processEPLPlayerSeasonAction(String option) throws Exception{
-		String fileName = option == null ? FootballAnalysisConstants.FPLPLAYERJSON : 
-			option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? FootballAnalysisConstants.FPLPLAYERSIXWEEKJSON :
-				FootballAnalysisConstants.FPLPLAYERFOURWEEKJSON;
+		String fileName = FootballAnalysisConstants.FPLPLAYERJSON;
+		
+		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG)){
+			fileName = FootballAnalysisConstants.FPLPLAYERSIXWEEKJSON;
+		}
+		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
+			fileName = FootballAnalysisConstants.FPLPLAYERFOURWEEKJSON;
+		}
+
 		return processEPLPlayerSeasonActionWorker(fileName);
 	}
 	

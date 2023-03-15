@@ -121,6 +121,7 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNOG ="OG";
 	public static final String EXCELCOLUMNPENTCH ="PenTchs";
 	public static final String EXCELCOLUMNSHOTS ="Shots";
+	public static final String EXCELCOLUMNNPSHOTS ="NP Shots";
 	public static final String EXCELCOLUMNSIB ="SIB";
 	public static final String EXCELCOLUMNSIBPERCENT ="SIB %";
 	public static final String EXCELCOLUMN6YD ="S6YD";
@@ -159,9 +160,11 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNBASEBPS90 ="Base BPS/90";
 	public static final String EXCELCOLUMNPENTCH90 ="PTs/90";
 	public static final String EXCELCOLUMNSHOTS90 ="Shots/90";
+	public static final String EXCELCOLUMNNPSHOTS90 ="NP Shots/90";
 	public static final String EXCELCOLUMNSIB90 ="SIB/90";
 	public static final String EXCELCOLUMNS6YD90 ="S6YD/90";
 	public static final String EXCELCOLUMNSOT90 ="SOT/90";
+	public static final String EXCELCOLUMNNPXGSHOT ="NPXG/SH";
 	public static final String EXCELCOLUMNSHEAD90 ="Headers/90";
 	public static final String EXCELCOLUMNASS90 ="As/90";
 	public static final String EXCELCOLUMNFPLASS90 ="FPL As/90";
@@ -241,12 +244,11 @@ public class FootballAnalysisConstants {
 	public static final String FPLGC = "Goals Conceded";
 	public static final String FPLGS = "Goals";
 	public static final String FPLSV = "Saves";
-	public static final String FPLMINS = "Time Played";
+	public static final String FPLMINS = "Time Played - FPL";
 	public static final String FSBPSHEADER = "BPS";
 	public static final String FPLYCS = "Premier League Yellow Cards";
 	public static final String FPLRCS = "Premier League Total Red Cards";
 	public static final String FPLPENSVS = "Saves From Penalty";
-
 
 	private static final ArrayList<Integer> getCalendarMonths (boolean firstHalf){
 		ArrayList<Integer> retVal = new ArrayList<Integer>();
@@ -334,6 +336,7 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBASEBPS);
 		retVal.add(EXCELCOLUMNPENTCH);
 		retVal.add(EXCELCOLUMNSHOTS);
+		retVal.add(EXCELCOLUMNNPSHOTS);
 		retVal.add(EXCELCOLUMNSIB);
 		retVal.add(EXCELCOLUMN6YD);
 		retVal.add(EXCELCOLUMNSOT);
@@ -366,9 +369,11 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBASEBPS90);
 		retVal.add(EXCELCOLUMNPENTCH90);
 		retVal.add(EXCELCOLUMNSHOTS90);
+		retVal.add(EXCELCOLUMNNPSHOTS90);
 		retVal.add(EXCELCOLUMNSIB90);
 		retVal.add(EXCELCOLUMNS6YD90);
 		retVal.add(EXCELCOLUMNSOT90);
+		retVal.add(EXCELCOLUMNNPXGSHOT);
 		retVal.add(EXCELCOLUMNSHEAD90);
 		retVal.add(EXCELCOLUMNASS90);
 		retVal.add(EXCELCOLUMNFPLASS90);
@@ -431,6 +436,7 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNGS,"Goals");
 		retVal.put(EXCELCOLUMNGSPK,"Goals From Penalties");
 		retVal.put(EXCELCOLUMNSHOTS,"Shots");
+		retVal.put(EXCELCOLUMNNPSHOTS, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNSIB,"Shots - Inside Box");
 		retVal.put(EXCELCOLUMN6YD,"Shots - Six Yard Box");
 		retVal.put(EXCELCOLUMNSOT,"Shots On Target");
@@ -442,7 +448,7 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNGIB,"Goals From Inside Box");
 		retVal.put(EXCELCOLUMNGSOPEN,"Goals From Open Play");
 		retVal.put(EXCELCOLUMNPKMISS,"Penalties Missed");
-		retVal.put(EXCELCOLUMNMINS,"Time Played");
+		retVal.put(EXCELCOLUMNMINS,"Time Played - FPL");
 		retVal.put(EXCELCOLUMNAPPS,"Appearances");
 		retVal.put(EXCELCOLUMNPENTCH,"Touches - Penalty Area");
 		retVal.put(EXCELCOLUMNSIBPERCENT, FORMULAIDENTIFIER);
@@ -464,9 +470,11 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNGS90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNPENTCH90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNSHOTS90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNNPSHOTS90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNSIB90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNS6YD90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNSOT90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNNPXGSHOT, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNSHEAD90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNASS90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFPLASS90, FORMULAIDENTIFIER);
@@ -499,7 +507,7 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNUXNPPTS, FORMULAIDENTIFIER);
 
 		retVal.put(EXCELCOLUMNFSXG, "xG Expected Goals");
-		retVal.put(EXCELCOLUMNFSNPXG, "xG Non Penalty");
+		retVal.put(EXCELCOLUMNFSNPXG, "xG Non-Penalty");
 		retVal.put(EXCELCOLUMNFSXA, "xA Expected Assists");
 		retVal.put(EXCELCOLUMNFSXG90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFSNPXG90, FORMULAIDENTIFIER);
@@ -638,6 +646,7 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNCS);
 		retVal.add(EXCELCOLUMNPENTCH);
 		retVal.add(EXCELCOLUMNSHOTS);
+		retVal.add(EXCELCOLUMNNPSHOTS);
 		retVal.add(EXCELCOLUMNSIB);
 		retVal.add(EXCELCOLUMNSIBPERCENT);
 		retVal.add(EXCELCOLUMN6YD);
@@ -686,10 +695,12 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBASEBPS90);
 		retVal.add(EXCELCOLUMNPENTCH90);
 		retVal.add(EXCELCOLUMNSHOTS90);
+		retVal.add(EXCELCOLUMNNPSHOTS90);
 		retVal.add(EXCELCOLUMNSIB90);
 		retVal.add(EXCELCOLUMNS6YD90);
 		retVal.add(EXCELCOLUMNSHEAD90);
 		retVal.add(EXCELCOLUMNSOT90);
+		retVal.add(EXCELCOLUMNNPXGSHOT);
 		retVal.add(EXCELCOLUMNASS90);
 		retVal.add(EXCELCOLUMNFPLASS90);
 		retVal.add(EXCELCOLUMNBCC90);
@@ -858,6 +869,9 @@ public class FootballAnalysisConstants {
 			
 			case "Newcastle United":
 				return "Newcastle Utd";
+			
+			case "Nottingham Forest":
+				return "Nott\\'ham Forest";
 			
 			case "Sheffield United":
 				return "Sheffield Utd";

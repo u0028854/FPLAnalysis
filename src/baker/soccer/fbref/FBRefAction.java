@@ -46,7 +46,7 @@ public class FBRefAction {
 
 			org.htmlparser.util.NodeList tempNodeList = new org.htmlparser.util.NodeList();
 			nodes.elementAt(i).collectInto(tempNodeList, 
-					new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"minutes\"]"), new OrFilter(new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"player\"]"), new CssSelectorNodeFilter("td[data-stat=\"xa\"]")), new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"xg\"]"), new CssSelectorNodeFilter("td[data-stat=\"npxg\"]")))));
+					new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"minutes\"]"), new OrFilter(new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"player\"]"), new CssSelectorNodeFilter("td[data-stat=\"xg_assist\"]")), new OrFilter(new CssSelectorNodeFilter("td[data-stat=\"xg\"]"), new CssSelectorNodeFilter("td[data-stat=\"npxg\"]")))));
 			
 			for (int j = 0; j < tempNodeList.size(); j++){
 				// Get the nodes and value of attribute "title"
@@ -62,7 +62,7 @@ public class FBRefAction {
 				else if(tempAttrValue.equals("npxg")){
 					playerObject.setNpxG(Float.parseFloat(statElement.getFirstChild() == null ? "0.0" : statElement.getFirstChild().getText()));
 				}
-				else if(tempAttrValue.equals("xa")){
+				else if(tempAttrValue.equals("xg_assist")){
 					playerObject.setxA(Float.parseFloat(statElement.getFirstChild() == null ? "0.0" : statElement.getFirstChild().getText()));
 				}
 				else if(tempAttrValue.equals("minutes")){
@@ -87,11 +87,12 @@ public class FBRefAction {
 		}
 
 		parser.reset();
+		
 		return retVal;
 	}
 	
 	public static HashMap<String, FBRefTeamObject> processFBRefTeamHTML() throws Exception{
-		//FootballAnalysisUtil.removeHTMLComments(FootballAnalysisConstants.FBREFHTMLTEAMFILENAME, FootballAnalysisConstants.FBREFTEAMOUTPUTFILENAME);
+		FootballAnalysisUtil.removeHTMLComments(FootballAnalysisConstants.FBREFHTMLTEAMFILENAME, FootballAnalysisConstants.FBREFTEAMOUTPUTFILENAME);
 		
 		HashMap<String, FBRefTeamObject> retVal = new HashMap<String, FBRefTeamObject>();
 		
@@ -101,7 +102,7 @@ public class FBRefAction {
 		// Set up node collector
 		org.htmlparser.util.NodeList nodes;
 
-		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("td[data-stat=\"squad\"]")), new TagNameFilter("a")};
+		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("td[data-stat=\"team\"]")), new TagNameFilter("a")};
 		nodes = parser.parse(new AndFilter(tempAndFilterArray));
 		
 		for (int i = 0; i < 20; i++){
@@ -110,11 +111,16 @@ public class FBRefAction {
 			// Create data objects
 			FBRefTeamObject teamObject = new FBRefTeamObject();
 			
-			teamObject.setTeamName(parentNode.elementAt(1).getChildren().elementAt(2).getChildren().elementAt(0).getText().trim());
-			teamObject.setxG(Float.parseFloat(parentNode.elementAt(10).getFirstChild() == null ? "0" : parentNode.elementAt(10).getFirstChild().getText()));
-			teamObject.setxGC(Float.parseFloat(parentNode.elementAt(11).getFirstChild() == null ? "0" : parentNode.elementAt(11).getFirstChild().getText()));
+			try{
+				teamObject.setTeamName(parentNode.elementAt(1).getChildren().elementAt(2).getChildren().elementAt(0).getText().trim());
+				teamObject.setxG(Float.parseFloat(parentNode.elementAt(10).getFirstChild() == null ? "0" : parentNode.elementAt(11).getFirstChild().getText()));
+				teamObject.setxGC(Float.parseFloat(parentNode.elementAt(11).getFirstChild() == null ? "0" : parentNode.elementAt(12).getFirstChild().getText()));
 			
-			retVal.put(teamObject.getTeamName(), teamObject);
+				retVal.put(teamObject.getTeamName(), teamObject);
+			}
+			catch (Exception e){
+				System.out.println(e);
+			}
 		}
 
 		parser.reset();

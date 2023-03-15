@@ -17,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.Tag;
@@ -118,18 +119,33 @@ public class FootballAnalysisAction {
 						HashMap<String, String> valueHash = playerHash.get(playerIterator.next()).getDatabaseInsertValues();
 
 						Iterator<String> valueIterator = valueHash.keySet().iterator();
+						
+						Document tempDoc = new Document("_id", new ObjectId());
 
-						String outputJSON = "{";		
+						//String outputJSON = "{";		
 
 						while(valueIterator.hasNext()){
 							String valueKey = valueIterator.next();
-							outputJSON += (!outputJSON.equals("{") ? "," : "") + "\"" + valueKey + "\":\"" + valueHash.get(valueKey) + "\"";
+							String tempValue = valueHash.get(valueKey);
+							
+							try{
+								tempDoc.append(valueKey, Double.parseDouble(tempValue));
+							}
+							catch(NumberFormatException e){
+								tempDoc.append(valueKey, tempValue);
+							}
+							catch(NullPointerException e){
+								tempDoc.append(valueKey, tempValue);
+							}
+							//outputJSON += (!outputJSON.equals("{") ? "," : "") + "\"" + valueKey + "\":\"" + valueHash.get(valueKey) + "\"";
 						}
-
-						outputJSON += "}";
-						inserts.add(Document.parse(outputJSON));
+						
+						
+						//outputJSON += "}";
+						//inserts.add(Document.parse(outputJSON));
+						inserts.add(tempDoc);
+						
 					}
-
 					coll.insertMany(inserts);
 				}
 
@@ -212,8 +228,7 @@ public class FootballAnalysisAction {
 								: FootballAnalysisConstants.STATS_TABLE_OUTPUT_4GW_FILE);
 
 			HashMap<String, HashMap<String, FSPlayerObject>> fsPlayerData = new HashMap<String, HashMap<String, FSPlayerObject>>();
-
-			for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
+for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 				fsPlayerData.put(FootballAnalysisConstants.PLAYER_POSITIONS[i], processFantScoutStatTables(FootballAnalysisConstants.PLAYER_POSITIONS[i]));
 			}
 
@@ -278,7 +293,7 @@ public class FootballAnalysisAction {
 
 			UnderstatTeamObject tempUnderstatTeam = understatTeamData.get(FootballAnalysisConstants.mapUnderstatTeamName(tempStr));
 			FBRefTeamObject tempFBRefTeam = fbRefTeamData.get(FootballAnalysisConstants.mapFBRefTeamName(tempStr));
-			fileData += "," + tempUnderstatTeam.sumXG() + "," + tempUnderstatTeam.sumXGA() + "," + tempFBRefTeam.getxG() + "," + tempFBRefTeam.getxGC() + "\n";
+			fileData += "," + tempUnderstatTeam.sumXG() + "," + tempUnderstatTeam.sumXGA() + "," + (tempFBRefTeam == null ? 0 : tempFBRefTeam.getxG()) + "," + (tempFBRefTeam == null ? 0 : tempFBRefTeam.getxGC()) + "\n";
 		}
 		FootballAnalysisUtil.writeFile(fileName, fileData);
 	}

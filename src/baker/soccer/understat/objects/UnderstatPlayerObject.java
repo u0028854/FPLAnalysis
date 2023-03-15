@@ -16,7 +16,7 @@ public class UnderstatPlayerObject {
 	}
 
 	public void setPlayer_name(String player_name) {
-		this.player_name = FootballAnalysisUtil.stripAccents(player_name).replace("&#039;", "'");
+		this.player_name = FootballAnalysisUtil.stripAccents(player_name);
 	}
 
 	public void setTime(int time) {

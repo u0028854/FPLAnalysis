@@ -3,7 +3,7 @@
 var unirest = require("unirest");
 var fs = require("fs");
 
-var fileName = "GWSchedule.csv";
+var fileName = "GWScheduleExtract.csv";
 var req = unirest.get("https://fantasy.premierleague.com/api/bootstrap-static/");
 
 req.end(function(res) {

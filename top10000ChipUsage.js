@@ -66,46 +66,52 @@ async function getURLData(url){
 }
 
 async function getTeamChips(teamData){
-    let teamChips = teamData.toJSON().body.chips;
-    let teamChipTracker = ['WC', 'FH', 'FH', 'BB', 'TXC'];
-    
-    for(let k = 0; k < teamChips.length; k++){
-        switch (teamChips[k].name) {
-            case 'wildcard':
-                if(teamChips[k].event >= 20){
-                    teamChipTracker[teamChipTracker.indexOf('WC')] = null;
-                }
-                break;
-            case 'freehit':
-                teamChipTracker[teamChipTracker.indexOf('FH')] = null;
-                break;
-            case 'bboost':
-                teamChipTracker[teamChipTracker.indexOf('BB')] = null;
-                break;
-            case '3xc':
-                teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
-                break;
+    try{
+        let teamChips = teamData.toJSON().body.chips;
+        let teamChipTracker = ['WC', 'FH', 'FH', 'BB', 'TXC'];
+        
+        for(let k = 0; k < teamChips.length; k++){
+            switch (teamChips[k].name) {
+                case 'wildcard':
+                    if(teamChips[k].event >= 20){
+                        teamChipTracker[teamChipTracker.indexOf('WC')] = null;
+                    }
+                    break;
+                case 'freehit':
+                    teamChipTracker[teamChipTracker.indexOf('FH')] = null;
+                    break;
+                case 'bboost':
+                    teamChipTracker[teamChipTracker.indexOf('BB')] = null;
+                    break;
+                case '3xc':
+                    teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
+                    break;
+            }
+        }
+
+        let temp = [];
+
+        for(const val of teamChipTracker.values()){
+            if(val){
+                temp.push(val);
+            }
+        }
+
+        temp.sort();
+
+        let key = '';
+
+        for(const val of temp.values()){
+            key += val;
+        }
+
+        if(key !== ''){
+            chipTracker.set(key, chipTracker.get(key) + 1);
         }
     }
-
-    let temp = [];
-
-    for(const val of teamChipTracker.values()){
-        if(val){
-            temp.push(val);
-        }
-    }
-
-    temp.sort();
-
-    let key = '';
-
-    for(const val of temp.values()){
-        key += val;
-    }
-
-    if(key !== ''){
-        chipTracker.set(key, chipTracker.get(key) + 1);
+    catch (error){
+        console.log(JSON.stringify(teamData));
+        console.log(JSON.stringify(error));
     }
 
     return chipTracker;

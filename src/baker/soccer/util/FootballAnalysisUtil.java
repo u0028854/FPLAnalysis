@@ -41,7 +41,7 @@ public class FootballAnalysisUtil {
 
 	public static String getPlayerStatTableFormulasMap(String positionName, String columnName, int maxColumCount, int maxRowCount, int currentColumCount, int currentRowCount){
 		String retVal = null;
-
+		
 		if (columnName != null){
 			if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSIBPERCENT)){
 				retVal = buildCellDividedByCellFormula(FootballAnalysisConstants.EXCELCOLUMNSHOTS,FootballAnalysisConstants.EXCELCOLUMNSIB, maxColumCount, maxRowCount, currentRowCount);
@@ -109,6 +109,9 @@ public class FootballAnalysisUtil {
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSHOTS90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSHOTS, 90, maxColumCount, maxRowCount, currentRowCount);
 			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNNPSHOTS90)){
+				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNNPSHOTS, 90, maxColumCount, maxRowCount, currentRowCount);
+			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSIB90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSIB, 90, maxColumCount, maxRowCount, currentRowCount);
 			}
@@ -117,6 +120,12 @@ public class FootballAnalysisUtil {
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSOT90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSOT, 90, maxColumCount, maxRowCount, currentRowCount);
+			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNNPSHOTS)){
+				retVal = buildCellMinusSumFormula(FootballAnalysisConstants.EXCELCOLUMNSHOTS,FootballAnalysisConstants.EXCELCOLUMNGSPK, FootballAnalysisConstants.EXCELCOLUMNPKMISS, maxColumCount, maxRowCount, currentRowCount);
+			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNNPXGSHOT)){
+				retVal = buildCellDividedByCellFormula(FootballAnalysisConstants.EXCELCOLUMNNPSHOTS90,FootballAnalysisConstants.EXCELCOLUMNFBREFNPXG, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSHEAD90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNGSHEAD, 90, maxColumCount, maxRowCount, currentRowCount);
@@ -1032,7 +1041,7 @@ public class FootballAnalysisUtil {
 	public static String stripAccents(String str){
 		String retVal = StringUtils.stripAccents(str);
 		
-		return retVal.replace("ð", "d").replace("ø", "o").replace("Ø","O");
+		return retVal.replace("ð", "d").replace("ø", "o").replace("Ø","O").replace("ß", "ss").replace("&#039;", "'");
 	}
 	
 	public static void removeHTMLComments(String inputFileName, String outputFileName) throws Exception{
