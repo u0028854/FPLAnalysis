@@ -24,19 +24,22 @@ const mongoDBMethods = require('../mongoDBconnector.js');
 const unirest = require("unirest");
 const { argv } = require('process');
 
-async function processBaseData(uriValue, teamExtraction, playerExtraction){
+async function processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap){
     return new Promise(resolve => {
         let retVal = [];
         unirest.get(uriValue).end(function(res) {
             if (res.error){
-                console.log(uriValue);
-                console.log(res.error);
+                console.error(uriValue);
+                console.error(res.error);
             }
 
             let jsonArray = res.toJSON().body;
 
             if(jsonArray) {
-                let teamDataMap = new Map();
+                if(!teamDataMap){
+                    teamDataMap = new Map();
+                }
+
                 let playerTypeMap = new Map();
                 
                 if(teamExtraction){
@@ -89,11 +92,33 @@ async function processBaseData(uriValue, teamExtraction, playerExtraction){
     });
 }
 
-async function extractBaseData(teamExtraction, playerExtraction, dbName, dbCollection){
+async function extractBaseData(teamExtraction, playerExtraction, teamDataMap){
+    let uriValue = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+    return await processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap);
+}
+
+async function extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection){
     let uriValue = 'https://fantasy.premierleague.com/api/bootstrap-static/';
     let objectsToInsert = await processBaseData(uriValue, teamExtraction, playerExtraction);
-    console.log('objectsToInsert.length ' + objectsToInsert.length);
-    await mongoDBMethods(objectsToInsert, dbName, dbCollection);
+    await mongoDBMethods(objectsToInsert, dbName, dbCollection, null);
+}
+
+async function exportPlayerTeamData(options, teamDataMap){
+    let teamExtraction = false;
+    let playerExtraction = false;
+
+    if(options.toLowerCase() === 'players'){
+        playerExtraction = true;
+    }
+    else if(options.toLowerCase() === 'teams'){
+        teamExtraction = true;
+    }
+    else if(options.toLowerCase() === 'both'){
+        playerExtraction = true;
+        teamExtraction = true;
+    }
+
+    return await extractBaseData(teamExtraction, playerExtraction, teamDataMap);
 }
 
 async function main(){
@@ -123,7 +148,7 @@ async function main(){
 
         if(argMap.has('dbName') || argMap.has('dbCollection')){
             dbName = argMap.get('dbName');
-            dbName = argMap.get('dbCollection');
+            dbCollection = argMap.get('dbCollection');
 
             if(!dbName || !dbCollection){
                 console.error('dbName requires dbCollection and vice vesra');
@@ -147,11 +172,11 @@ async function main(){
         }
     }
 
-    console.log('process base data begin');
-    await extractBaseData(teamExtraction, playerExtraction, dbName, dbCollection);
-    console.log('process base data done');
+    await extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection);
     
     process.exit(0);
 }
 
-main();
+// main();
+
+module.exports = exportPlayerTeamData;

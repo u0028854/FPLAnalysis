@@ -9,7 +9,6 @@
 
 const unirest = require("unirest");
 const fs = require("fs");
-const { argv } = require('process');
 
 const DEFAULT_OUTPUTFILE = 'GWScheduleExtract.csv';
 

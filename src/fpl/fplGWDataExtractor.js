@@ -35,33 +35,39 @@ async function processGWData(uriValue, gameWeek){
         let retVal = [];
         unirest.get(uriValue).end(function(res) {
             if (res.error){
-                console.log(uriValue);
-                console.log(res.error);
+                console.error(uriValue);
+                console.error(res.error);
                 process.exit(1);
             }
 
             let jsonArray = res.toJSON().body?.elements;
             for (let i = 0; i < jsonArray.length; i++){
-                let tempPlayer = {};
-                tempPlayer.id = jsonArray[i].id;
-                tempPlayer._id = gameWeek + '_' + jsonArray[i].id;
-                tempPlayer.gw = gameWeek;
-                tempPlayer.minutes =  jsonArray[i].stats.minutes;
-                tempPlayer.goals_scored =  jsonArray[i].stats.goals_scored;
-                tempPlayer.assists =  jsonArray[i].stats.assists;
-                tempPlayer.clean_sheets =  jsonArray[i].stats.clean_sheets;
-                tempPlayer.goals_conceded =  jsonArray[i].stats.goals_conceded;
-                tempPlayer.own_goals =  jsonArray[i].stats.own_goals;
-                tempPlayer.penalties_saved =  jsonArray[i].stats.penalties_saved;
-                tempPlayer.penalties_missed =  jsonArray[i].stats.penalties_missed;
-                tempPlayer.yellow_cards =  jsonArray[i].stats.yellow_cards;
-                tempPlayer.red_cards =  jsonArray[i].stats.red_cards;
-                tempPlayer.saves =  jsonArray[i].stats.saves;
-                tempPlayer.bonus =  jsonArray[i].stats.bonus;
-                tempPlayer.bps =  jsonArray[i].stats.bps;
-                tempPlayer.total_points =  jsonArray[i].stats.total_points;
+                let tempPlayer = jsonArray[i];
+                let tempPlayerObject = {};
+                tempPlayerObject.id = tempPlayer.id;
+                tempPlayerObject._id = gameWeek + '_' + tempPlayer.id;
+                tempPlayerObject.gw = gameWeek;
+                tempPlayerObject.goals_conceded =  tempPlayer.stats.goals_conceded;
+                tempPlayerObject.saves =  tempPlayer.stats.saves;
+                tempPlayerObject.bps =  tempPlayer.stats.bps;
+                tempPlayerObject.total_points =  tempPlayer.stats.total_points;
 
-                retVal.push(tempPlayer);
+                tempPlayerObject.gameweekFixtures = [];
+                
+                let tempFixtures = tempPlayer.explain;
+                
+                for(let j = 0; j < tempFixtures.length; j++){
+                    let tempPlayerFixture = {};
+                    tempPlayerFixture.id = gameWeek + '_' + tempFixtures[j].fixture;
+                    tempPlayerFixture.stats = [];
+                    for(let k = 0; k < tempFixtures[j].stats.length; k++){
+                        tempPlayerFixture.stats.push({'type': tempFixtures[j].stats[k].identifier, 'points': tempFixtures[j].stats[k].points, 'value': tempFixtures[j].stats[k].value})
+                    }
+
+                    tempPlayerObject.gameweekFixtures.push(tempPlayerFixture);
+                }
+                
+                retVal.push(tempPlayerObject);
             }
 
             resolve(retVal);
@@ -72,8 +78,46 @@ async function processGWData(uriValue, gameWeek){
 async function processGWEvent(gameWeek, dbName, dbCollection){
     let uriValue = 'https://fantasy.premierleague.com/api/event/' + gameWeek + '/live'
     let objectsToInsert = await processGWData(uriValue, gameWeek);
-    console.log('objectsToInsert.length ' + objectsToInsert.length);
     await mongoDBMethods(objectsToInsert, dbName, dbCollection);
+}
+
+async function extractGWData(start, end){
+    let retVal = [];
+
+    if(start || end){
+        if(!start || !end){
+            console.error('Invalid start and/or end parameters');
+            process.exit(1);
+        }
+
+        if(isNaN(start) || isNaN(end)){
+            console.error('Invalid start and/or end parameters');
+            process.exit(1);
+        }
+        else if(start > end){
+            console.error('Start gameweek is greater than end gameweek');
+            process.exit(1);
+        }
+        else if(start < 1 || start > 38){
+            console.error('Start gameweek is less than 1 or greater than 38');
+            process.exit(1);
+        }
+        else if(end < 1 || end > 38){
+            console.error('End gameweek is less than 1 or greater than 38');
+            process.exit(1);
+        }
+    }
+    else{
+        start = 1;
+        end = 38;
+    }
+
+    for(let gameWeek = start; gameWeek <= end; gameWeek++){
+        let uriValue = 'https://fantasy.premierleague.com/api/event/' + gameWeek + '/live'
+        retVal.push(await processGWData(uriValue, gameWeek));
+    }
+
+    return retVal;
 }
 
 async function main(){
@@ -123,7 +167,7 @@ async function main(){
 
         if(argMap.has('dbName') || argMap.has('dbCollection')){
             dbName = argMap.get('dbName');
-            dbName = argMap.get('dbCollection');
+            dbCollection = argMap.get('dbCollection');
 
             if(!dbName || !dbCollection){
                 console.error('dbName requires dbCollection and vice vesra');
@@ -133,12 +177,12 @@ async function main(){
     }
 
     for(let i = start; i <= end; i++){
-        console.log('processGWEvent begin');
         await processGWEvent(i, dbName, dbCollection);
-        console.log('processGWEvent done');
     }
 
     process.exit(0);
 }
 
-main();
+//main();
+
+module.exports = extractGWData;

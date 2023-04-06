@@ -60,8 +60,8 @@ async function processGWData(uriValue, gameWeek, teamId){
     return new Promise(resolve => {
         unirest.get(uriValue).end(function(res) {
             if (res.error){
-                console.log(uriValue);
-                console.log(res.error);
+                console.error(uriValue);
+                console.error(res.error);
             }
 
             let jsonArray = res.toJSON().body;
@@ -108,6 +108,53 @@ async function processGWEvent(gameWeek, teamId, dbName, dbCollection){
     }
 
     await mongoDBMethods(objectToInsert, dbName, dbCollection);
+}
+
+async function exportTeamGWData(start, end, teamId){
+    let retVal = [];
+
+    if(start || end){
+        if(!start || !end){
+            console.error('Invalid start and/or end parameters');
+            process.exit(1);
+        }
+
+        if(isNaN(start) || isNaN(end)){
+            console.error('Invalid start and/or end parameters');
+            process.exit(1);
+        }
+        else if(start > end){
+            console.error('Start gameweek is greater than end gameweek');
+            process.exit(1);
+        }
+        else if(start < 1 || start > 38){
+            console.error('Start gameweek is less than 1 or greater than 38');
+            process.exit(1);
+        }
+        else if(end < 1 || end > 38){
+            console.error('End gameweek is less than 1 or greater than 38');
+            process.exit(1);
+        }
+    }
+    else{
+        start = 1;
+        end = 38;
+    }
+
+    for(let gameWeek = start; gameWeek <= end; gameWeek++){
+        if(Array.isArray(teamId)){
+            for(let x = 0; x < teamId.length; x++){
+                let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId[x] + '/event/' + gameWeek + '/picks/';
+                retVal.push(await processGWData(uriValue, gameWeek, teamId[x]));
+            }
+        }
+        else{
+            let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId + '/event/' + gameWeek + '/picks/';
+            retVal.push(await processGWData(uriValue, gameWeek, teamId));
+        }
+    }
+
+    return retVal;
 }
 
 async function main(){
@@ -181,7 +228,7 @@ async function main(){
 
         if(argMap.has('dbName') || argMap.has('dbCollection')){
             dbName = argMap.get('dbName');
-            dbName = argMap.get('dbCollection');
+            dbCollection = argMap.get('dbCollection');
 
             if(!dbName || !dbCollection){
                 console.error('dbName requires dbCollection and vice vesra');
@@ -195,12 +242,12 @@ async function main(){
     }
 
     for(let i = start; i <= end; i++){
-        console.log('processGWEvent begin');
         await processGWEvent(i, teamId, dbName, dbCollection);
-        console.log('processGWEvent done');
     }
 
     process.exit(0);
 }
 
-main();
+// main();
+
+module.exports = exportTeamGWData;

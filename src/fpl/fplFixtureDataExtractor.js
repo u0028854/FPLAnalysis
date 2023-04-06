@@ -22,8 +22,8 @@ async function processFixtureData(uriValue){
         let retVal = [];
         unirest.get(uriValue).end(function(res) {
             if (res.error){
-                console.log(uriValue);
-                console.log(res.error);
+                console.error(uriValue);
+                console.error(res.error);
             }
 
             let jsonArray = res.toJSON().body;
@@ -49,8 +49,12 @@ async function processFixtureData(uriValue){
 async function extractFixtureData(dbName, dbCollection){
     let uriValue = 'https://fantasy.premierleague.com/api/fixtures/';
     let objectsToInsert = await processFixtureData(uriValue);
-    console.log('objectsToInsert.length ' + objectsToInsert.length);
     await mongoDBMethods(objectsToInsert, dbName, dbCollection);
+}
+
+async function exportFixtureData(){
+    let uriValue = 'https://fantasy.premierleague.com/api/fixtures/';
+    return await processFixtureData(uriValue);
 }
 
 async function main(){
@@ -71,7 +75,7 @@ async function main(){
 
         if(argMap.has('dbName') || argMap.has('dbCollection')){
             dbName = argMap.get('dbName');
-            dbName = argMap.get('dbCollection');
+            dbCollection = argMap.get('dbCollection');
 
             if(!dbName || !dbCollection){
                 console.error('dbName requires dbCollection and vice vesra');
@@ -80,11 +84,11 @@ async function main(){
         }
     }
     
-    console.log('process fixture data begin');
     await extractFixtureData(dbName, dbCollection);
-    console.log('process fixture data done');
     
     process.exit(0);
 }
 
-main();
+//main();
+
+module.exports = exportFixtureData;
