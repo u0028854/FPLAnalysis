@@ -1,0 +1,22 @@
+{
+  "name": "fplanalysis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "GameweekExtractor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/u0028854/FPLAnalysis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/u0028854/FPLAnalysis/issues"
+  },
+  "homepage": "https://github.com/u0028854/FPLAnalysis#readme",
+  "dependencies": {
+    "mongodb": "^5.1.0"
+  }
+}

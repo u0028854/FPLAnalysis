@@ -2,12 +2,10 @@
 
 var unirest = require("unirest");
 var fs = require("fs");
-//const { Console } = require("console");
 const { argv } = require('process');
 
 var fileName = "ChipUsage.csv";
 var urlBase = 'https://fantasy.premierleague.com/api/leagues-classic/314/standings/?page_standings=';
-let teamsProcessed = 0;
 
 let chipTracker = setChipTracker();
 
@@ -16,11 +14,6 @@ function setChipTracker(){
 
     retVal.set('BB',0);
     retVal.set('BBFH',0);
-    retVal.set('BBFHFH',0);
-    retVal.set('BBFHFHTXC',0);
-    retVal.set('BBFHFHTXCWC',0);
-    retVal.set('BBFHFHWC',0);
-    retVal.set('BBFH',0);
     retVal.set('BBFHTXC',0);
     retVal.set('BBFHTXCWC',0);
     retVal.set('BBFHWC',0);
@@ -28,10 +21,6 @@ function setChipTracker(){
     retVal.set('BBTXCWC',0);
     retVal.set('BBWC',0);
     retVal.set('FH',0);
-    retVal.set('FHFH',0);
-    retVal.set('FHFHTXC',0);
-    retVal.set('FHFHWC',0);
-    retVal.set('FHFHTXCWC',0);
     retVal.set('FHTXC',0);
     retVal.set('FHTXCWC',0);
     retVal.set('FHWC',0);
@@ -65,28 +54,37 @@ async function getURLData(url){
     return unirest.get(url);
 }
 
-async function getTeamChips(teamData){
+async function getTeamChips(teamData, consoleOutput){
     try{
         let teamChips = teamData.toJSON().body.chips;
-        let teamChipTracker = ['WC', 'FH', 'FH', 'BB', 'TXC'];
+        // let teamChipTracker = ['WC', 'FH', 'BB', 'TXC'];
+        let teamChipTracker = [];
         
         for(let k = 0; k < teamChips.length; k++){
             switch (teamChips[k].name) {
                 case 'wildcard':
-                    if(teamChips[k].event >= 20){
-                        teamChipTracker[teamChipTracker.indexOf('WC')] = null;
+                    // if(teamChips[k].event > 17){
+                    //     teamChipTracker[teamChipTracker.indexOf('WC')] = null;
+                    // }
+                    // break;
+                    if(teamChips[k].event < 17){
+                        teamChipTracker.push('WC');
                     }
                     break;
-                case 'freehit':
-                    teamChipTracker[teamChipTracker.indexOf('FH')] = null;
-                    break;
-                case 'bboost':
-                    teamChipTracker[teamChipTracker.indexOf('BB')] = null;
-                    break;
-                case '3xc':
-                    teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
-                    break;
+                // case 'freehit':
+                //     teamChipTracker[teamChipTracker.indexOf('FH')] = null;
+                //     break;
+                // case 'bboost':
+                //     teamChipTracker[teamChipTracker.indexOf('BB')] = null;
+                //     break;
+                // case '3xc':
+                //     teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
+                //     break;
             }
+        }
+
+        if(consoleOutput){
+            console.log(teamChipTracker);
         }
 
         let temp = [];
@@ -112,6 +110,8 @@ async function getTeamChips(teamData){
     catch (error){
         console.log(JSON.stringify(teamData));
         console.log(JSON.stringify(error));
+
+        process.exit(1);
     }
 
     return chipTracker;
@@ -119,14 +119,18 @@ async function getTeamChips(teamData){
 
 async function execute(startPageNumber, endPageNumber){
     let retVal;
+    let executionCount = 0;
     for(let j = startPageNumber; j <= endPageNumber; j++){
         let res = await getURLData(urlBase + j);
         let jsonArray = res.toJSON().body.standings.results;
 
         for (let i = 0; i < jsonArray.length; i++){
-            console.log('Processing team ' + jsonArray[i].entry);
+            executionCount++;
+            if(executionCount % 50 === 0){
+                console.log('Processing team ' + executionCount + ' : ' + jsonArray[i].entry);
+            }
             let teamData = await getURLData('https://fantasy.premierleague.com/api/entry/' + jsonArray[i].entry + '/history/');
-            retVal = await getTeamChips(teamData);
+            retVal = await getTeamChips(teamData, executionCount % 50 === 0);
         }
     }
 

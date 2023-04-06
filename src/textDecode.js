@@ -3,4 +3,3 @@ Latinise.latin_map = {"Á":"A","Ă":"A","Ắ":"A","Ặ":"A","Ằ":"A","Ẳ":"A",
 
 exports.latinise = function(strVar){return strVar.replace(/[^A-Za-z0-9\[\] ]/g,function(a){
     return Latinise.latin_map[a]||a})};
-
