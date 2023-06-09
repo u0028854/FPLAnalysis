@@ -36,4 +36,10 @@ function getGWSchedule(writeToFile){
     });
 }
 
+function main(){
+    getGWSchedule('true');
+}
+
+//main();
+
 module.exports = getGWSchedule;

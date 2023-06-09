@@ -20,11 +20,12 @@
 
 'use strict';
 
-const mongoDBMethods = require('../mongoDBconnector.js');
-const unirest = require("unirest");
 const { argv } = require('process');
+const mongoDBMethods = require('../mongoDBconnector.js');
+const fplUtils = require('../fplUtils.js');
+const unirest = require("unirest");
 
-async function processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap){
+async function processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap, teamNameMap, playerNameMap){
     return new Promise(resolve => {
         let retVal = [];
         unirest.get(uriValue).end(function(res) {
@@ -39,7 +40,7 @@ async function processBaseData(uriValue, teamExtraction, playerExtraction, teamD
                 if(!teamDataMap){
                     teamDataMap = new Map();
                 }
-
+                
                 let playerTypeMap = new Map();
                 
                 if(teamExtraction){
@@ -52,6 +53,10 @@ async function processBaseData(uriValue, teamExtraction, playerExtraction, teamD
                         tempTeam._id = tempTeam.objectType + '_' + teamData[i].id;
                         tempTeam.name = teamData[i].name;
 
+                        if(teamNameMap.has(tempTeam.name)){
+                            tempTeam.name = teamNameMap.get(tempTeam.name);
+                        }
+                        
                         retVal.push(tempTeam);
                         teamDataMap.set(teamData[i].id, tempTeam.name);
                     }
@@ -76,7 +81,12 @@ async function processBaseData(uriValue, teamExtraction, playerExtraction, teamD
                         
                         tempPlayerData.objectType = 'playerData';
                         tempPlayerData._id = tempPlayerData.objectType + '_' + playerData[i].id;
-                        tempPlayerData.name = playerData[i].first_name + ' ' + playerData[i].second_name;
+                        tempPlayerData.name = fplUtils.removeSpecialChars(playerData[i].first_name + ' ' + playerData[i].second_name);
+
+                        if(playerNameMap && playerNameMap.has(tempPlayerData.name)){
+                            tempPlayerData.name = playerNameMap.get(tempPlayerData.name);
+                        }
+                    
                         tempPlayerData.team = teamDataMap.get(playerData[i].team);
                         tempPlayerData.now_cost = playerData[i].now_cost;
                         tempPlayerData.start_cost = tempPlayerData.now_cost - playerData[i].cost_change_start;
@@ -92,20 +102,22 @@ async function processBaseData(uriValue, teamExtraction, playerExtraction, teamD
     });
 }
 
-async function extractBaseData(teamExtraction, playerExtraction, teamDataMap){
+async function extractBaseData(teamExtraction, playerExtraction, teamDataMap, teamNameMap, playerNameMap){
     let uriValue = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-    return await processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap);
+    return await processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap, teamNameMap, playerNameMap);
 }
 
-async function extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection){
+async function extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection, teamDataMap, teamNameMap, playerNameMap){
     let uriValue = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-    let objectsToInsert = await processBaseData(uriValue, teamExtraction, playerExtraction);
-    await mongoDBMethods(objectsToInsert, dbName, dbCollection, null);
+    let objectsToInsert = await processBaseData(uriValue, teamExtraction, playerExtraction, teamDataMap, teamNameMap, playerNameMap);
+    await mongoDBMethods.insertObjectData(objectsToInsert, dbName, dbCollection, 'fplBasePlayerTeamDataExtractor.extractBaseDataAndInsert');
 }
 
-async function exportPlayerTeamData(options, teamDataMap){
+async function exportPlayerTeamData(options, teamDataMap, dbName, dbCollection, teamNameMapFile, playerNameMapFile){
     let teamExtraction = false;
     let playerExtraction = false;
+    let teamNameMap;
+    let playerNameMap;
 
     if(options.toLowerCase() === 'players'){
         playerExtraction = true;
@@ -118,43 +130,60 @@ async function exportPlayerTeamData(options, teamDataMap){
         teamExtraction = true;
     }
 
-    return await extractBaseData(teamExtraction, playerExtraction, teamDataMap);
+    teamNameMap = fplUtils.buildNameMap(teamNameMapFile, 1, 0);
+    playerNameMap = fplUtils.buildNameMap(playerNameMapFile, 4, 2);
+
+    if(teamNameMap.size === 0){
+        console.error('teamNameMapFile argument invalid');
+        process.exit(1);
+    }
+
+    if(playerNameMap.size === 0){
+        console.error('playerNameMapFile argument invalid');
+        process.exit(1);
+    }
+
+    let retVal = await extractBaseData(teamExtraction, playerExtraction, teamDataMap, teamNameMap, playerNameMap);
+
+    if(dbName && dbCollection){
+        await mongoDBMethods.insertObjectData(retVal, dbName, dbCollection, 'fplBasePlayerTeamDataExtractor.exportPlayerTeamData');
+    }
+
+    return retVal;
 }
 
 async function main(){
     let teamExtraction = false;
     let playerExtraction = false;
-    let dbName;
-    let dbCollection;
+    let teamNameMap = fplUtils.buildNameMap(await fplUtils.getProp('teamNameMapFile'), 1, 0);
+    let playerNameMap = fplUtils.buildNameMap(await fplUtils.getProp('playerNameMapFile'), 4, 2);
+    let dbName = await fplUtils.getProp('fplBaseDatabase');
+    let dbCollection = await fplUtils.getProp('fplBaseDatabase');
+
+    if(teamNameMap.size === 0){
+        console.error('teamNameMapFile argument invalid');
+        process.exit(1);
+    }
+
+    if(playerNameMap.size === 0){
+        console.error('playerNameMapFile argument invalid');
+        process.exit(1);
+    }
+
+    if(!dbName || !dbCollection){
+        console.error('dbName requires dbCollection and vice vesra');
+        process.exit(1);
+    }
 
     if(argv){
-        let argMap = new Map();
-
-        for(let x = 0; x < argv.length; x++){
-            if(x > 1){
-                let splitArg = argv[x].split('=');
-                if(splitArg.length === 2){
-                    argMap.set(splitArg[0].trim(), splitArg[1].trim());
-                }
-            }
-        }
+        let argMap = fplUtils.buildArgsMap(argv);
 
         if(!argMap.has('options')){
-            console.error('Missing option parameter');
+            console.error('Missing options parameter');
             process.exit(1);
         }
 
         let options = argMap.get('options');
-
-        if(argMap.has('dbName') || argMap.has('dbCollection')){
-            dbName = argMap.get('dbName');
-            dbCollection = argMap.get('dbCollection');
-
-            if(!dbName || !dbCollection){
-                console.error('dbName requires dbCollection and vice vesra');
-                process.exit(1);
-            }
-        }
 
         if(options.toLowerCase() === 'players'){
             playerExtraction = true;
@@ -172,7 +201,7 @@ async function main(){
         }
     }
 
-    await extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection);
+    await extractBaseDataAndInsert(teamExtraction, playerExtraction, dbName, dbCollection, null, teamNameMap, playerNameMap);
     
     process.exit(0);
 }

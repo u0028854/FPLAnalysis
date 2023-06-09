@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { argv } = require('process');
 const understatJSONExtractor = require('./understatJSONExtractor.js');
-const textDecoder = require('../textDecode.js');
+const fplUtils = require('../fplUtils.js');
 
 const PLAYERDATA_VAR_NAME = 'datesData';
 const SHOTDATA_VAR_NAME = 'shotsData';
@@ -17,7 +17,7 @@ async function main(){
         let combinedPlayers = {...playerArray.h, ...playerArray.a};
 
         for (const x in combinedPlayers){
-            console.log(textDecoder(combinedPlayers[x].player));
+            console.log(fplUtils.buildNameMap(combinedPlayers[x].player, 2, 4));
         }
     }
     else{

@@ -14,8 +14,8 @@
 'use strict';
 
 const mongoDBMethods = require('../mongoDBconnector.js');
+const fplUtils = require('../fplUtils.js');
 const unirest = require("unirest");
-const { argv } = require('process');
 
 async function processFixtureData(uriValue){
     return new Promise(resolve => {
@@ -49,39 +49,27 @@ async function processFixtureData(uriValue){
 async function extractFixtureData(dbName, dbCollection){
     let uriValue = 'https://fantasy.premierleague.com/api/fixtures/';
     let objectsToInsert = await processFixtureData(uriValue);
-    await mongoDBMethods(objectsToInsert, dbName, dbCollection);
+    await mongoDBMethods.insertObjectData(objectsToInsert, dbName, dbCollection, 'fplFixtureDataExtractor.extractFixtureData');
 }
 
-async function exportFixtureData(){
+async function exportFixtureData(dbName, dbCollection){
     let uriValue = 'https://fantasy.premierleague.com/api/fixtures/';
-    return await processFixtureData(uriValue);
+    let retVal = await processFixtureData(uriValue);
+
+    if(dbName && dbCollection){
+        await mongoDBMethods.insertObjectData(retVal, dbName, dbCollection, 'fplFixtureDataExtractor.exportFixtureData');
+    }
+
+    return retVal;
 }
 
 async function main(){
-    let dbName;
-    let dbCollection;
+    let dbName = await fplUtils.getProp('fplBaseDatabase');
+    let dbCollection = await fplUtils.getProp('fplBaseDatabase');
 
-    if(argv){
-        let argMap = new Map();
-
-        for(let x = 0; x < argv.length; x++){
-            if(x > 1){
-                let splitArg = argv[x].split('=');
-                if(splitArg.length === 2){
-                    argMap.set(splitArg[0].trim(), splitArg[1].trim());
-                }
-            }
-        }
-
-        if(argMap.has('dbName') || argMap.has('dbCollection')){
-            dbName = argMap.get('dbName');
-            dbCollection = argMap.get('dbCollection');
-
-            if(!dbName || !dbCollection){
-                console.error('dbName requires dbCollection and vice vesra');
-                process.exit(1);
-            }
-        }
+    if(!dbName || !dbCollection){
+        console.error('dbName requires dbCollection and vice vesra');
+        process.exit(1);
     }
     
     await extractFixtureData(dbName, dbCollection);

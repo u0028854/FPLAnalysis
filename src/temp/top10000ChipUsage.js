@@ -34,7 +34,7 @@ function setChipTracker(){
     retVal.set('WC',0);
 
     try {
-        const data = fs.readFileSync(fileName, 'utf8');
+        const data = fs.readFileSync(fileName, 'utf8', 'w');
         
         if(data && data != ''){
             let tempObj = JSON.parse(data);
@@ -57,29 +57,25 @@ async function getURLData(url){
 async function getTeamChips(teamData, consoleOutput){
     try{
         let teamChips = teamData.toJSON().body.chips;
-        // let teamChipTracker = ['WC', 'FH', 'BB', 'TXC'];
-        let teamChipTracker = [];
+        
+        let teamChipTracker = ['WC', 'FH', 'BB', 'TXC'];
         
         for(let k = 0; k < teamChips.length; k++){
             switch (teamChips[k].name) {
                 case 'wildcard':
-                    // if(teamChips[k].event > 17){
-                    //     teamChipTracker[teamChipTracker.indexOf('WC')] = null;
-                    // }
-                    // break;
-                    if(teamChips[k].event < 17){
-                        teamChipTracker.push('WC');
+                    if(teamChips[k].event > 17){
+                        teamChipTracker[teamChipTracker.indexOf('WC')] = null;
                     }
                     break;
-                // case 'freehit':
-                //     teamChipTracker[teamChipTracker.indexOf('FH')] = null;
-                //     break;
-                // case 'bboost':
-                //     teamChipTracker[teamChipTracker.indexOf('BB')] = null;
-                //     break;
-                // case '3xc':
-                //     teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
-                //     break;
+                case 'freehit':
+                    teamChipTracker[teamChipTracker.indexOf('FH')] = null;
+                    break;
+                case 'bboost':
+                    teamChipTracker[teamChipTracker.indexOf('BB')] = null;
+                    break;
+                case '3xc':
+                    teamChipTracker[teamChipTracker.indexOf('TXC')] = null;
+                    break;
             }
         }
 
@@ -139,7 +135,7 @@ async function execute(startPageNumber, endPageNumber){
 
 async function main(){
     let startPageNumber = 1;
-    let endPageNumber = 2000;
+    let endPageNumber = 200;
     if(argv && argv.length === 4){
         startPageNumber = argv[2];
         endPageNumber = argv[3];

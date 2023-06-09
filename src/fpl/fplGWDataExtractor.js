@@ -26,9 +26,11 @@
 
 'use strict';
 
-const mongoDBMethods = require('../mongoDBconnector.js');
-const unirest = require("unirest");
 const { argv } = require('process');
+const mongoDBMethods = require('../mongoDBconnector.js');
+const fplUtils = require('../fplUtils.js');
+const FPLBaseObject = require('./FPLBaseDataObject.js');
+const unirest = require("unirest");
 
 async function processGWData(uriValue, gameWeek){
     return new Promise(resolve => {
@@ -42,11 +44,12 @@ async function processGWData(uriValue, gameWeek){
 
             let jsonArray = res.toJSON().body?.elements;
             for (let i = 0; i < jsonArray.length; i++){
+                let validFixtureFound = false;
                 let tempPlayer = jsonArray[i];
                 let tempPlayerObject = {};
-                tempPlayerObject.id = tempPlayer.id;
+                tempPlayerObject.fplId = tempPlayer.id;
                 tempPlayerObject._id = gameWeek + '_' + tempPlayer.id;
-                tempPlayerObject.gw = gameWeek;
+                tempPlayerObject.fplGameWeek = gameWeek;
                 tempPlayerObject.goals_conceded =  tempPlayer.stats.goals_conceded;
                 tempPlayerObject.saves =  tempPlayer.stats.saves;
                 tempPlayerObject.bps =  tempPlayer.stats.bps;
@@ -58,27 +61,29 @@ async function processGWData(uriValue, gameWeek){
                 
                 for(let j = 0; j < tempFixtures.length; j++){
                     let tempPlayerFixture = {};
-                    tempPlayerFixture.id = gameWeek + '_' + tempFixtures[j].fixture;
+                    tempPlayerFixture._id = gameWeek + '_' + tempFixtures[j].fixture;
+                    tempPlayerFixture.id = tempFixtures[j].fixture;
+                    tempPlayerFixture.fplGameWeek = gameWeek;
                     tempPlayerFixture.stats = [];
                     for(let k = 0; k < tempFixtures[j].stats.length; k++){
-                        tempPlayerFixture.stats.push({'type': tempFixtures[j].stats[k].identifier, 'points': tempFixtures[j].stats[k].points, 'value': tempFixtures[j].stats[k].value})
+                        if(tempFixtures[j].stats[k].identifier === 'minutes' && tempFixtures[j].stats[k].value !== 0){
+                            validFixtureFound = true;
+                        }
+
+                        tempPlayerFixture.stats.push({'type': tempFixtures[j].stats[k].identifier, 'points': tempFixtures[j].stats[k].points, 'value': tempFixtures[j].stats[k].value});
                     }
 
                     tempPlayerObject.gameweekFixtures.push(tempPlayerFixture);
                 }
                 
-                retVal.push(tempPlayerObject);
+                if(validFixtureFound){
+                    retVal.push(tempPlayerObject);
+                }
             }
 
             resolve(retVal);
         });
     });
-}
-
-async function processGWEvent(gameWeek, dbName, dbCollection){
-    let uriValue = 'https://fantasy.premierleague.com/api/event/' + gameWeek + '/live'
-    let objectsToInsert = await processGWData(uriValue, gameWeek);
-    await mongoDBMethods(objectsToInsert, dbName, dbCollection);
 }
 
 async function extractGWData(start, end){
@@ -121,68 +126,90 @@ async function extractGWData(start, end){
 }
 
 async function main(){
-    let start = 1;
-    let end = 38;
-    let dbName;
-    let dbCollection;
+    let start = Number.parseFloat(await fplUtils.getProp('gwStart'));
+    let end = Number.parseFloat(await fplUtils.getProp('gwEnd'));
+    let dbName = await fplUtils.getProp('fplGWDatabase');
+    let dbCollection = await fplUtils.getProp('fplGWDatabase');
+    let fixtureDatabaseName = await fplUtils.getProp('fplBaseDatabase');
+    let fixtureDatabaseCollection = await fplUtils.getProp('fplBaseDatabase');
+    let newPlayerAndTeamData = false;
+    let getNewFixtureData = false;
 
-    if(argv){
-        let argMap = new Map();
+    let argMap = fplUtils.buildArgsMap(argv);
 
-        for(let x = 0; x < argv.length; x++){
-            if(x > 1){
-                let splitArg = argv[x].split('=');
-                if(splitArg.length === 2){
-                    argMap.set(splitArg[0].trim(), splitArg[1].trim());
-                }
-            }
-        }
-
-        if(argMap.has('start') || argMap.has('end')){
-            if(!argMap.has('start') || !argMap.has('end')){
-                console.error('Invalid start and/or end parameters');
-                process.exit(1);
-            }
-
-            start = parseInt(argMap.get('start').trim());
-            end = parseInt(argMap.get('end').trim());
-
-            if(isNaN(start) || isNaN(end)){
-                console.error('Invalid start and/or end parameters');
-                process.exit(1);
-            }
-            else if(start > end){
-                console.error('Start gameweek is greater than end gameweek');
-                process.exit(1);
-            }
-            else if(start < 1 || start > 38){
-                console.error('Start gameweek is less than 1 or greater than 38');
-                process.exit(1);
-            }
-            else if(end < 1 || end > 38){
-                console.error('End gameweek is less than 1 or greater than 38');
-                process.exit(1);
-            }
-        }
-
-        if(argMap.has('dbName') || argMap.has('dbCollection')){
-            dbName = argMap.get('dbName');
-            dbCollection = argMap.get('dbCollection');
-
-            if(!dbName || !dbCollection){
-                console.error('dbName requires dbCollection and vice vesra');
-                process.exit(1);
-            }
-        }
+    if(argMap.has('newPlayerAndTeamData')){
+        newPlayerAndTeamData = argMap.get('newPlayerAndTeamData') === 'true' ? true : false;
     }
 
-    for(let i = start; i <= end; i++){
-        await processGWEvent(i, dbName, dbCollection);
+    if(argMap.has('getNewFixtureData')){
+        getNewFixtureData = argMap.get('getNewFixtureData') === 'true' ? true : false;
+    }
+
+    if(isNaN(start) || isNaN(end)){
+        console.error('Invalid start and/or end parameters');
+        process.exit(1);
+    }
+    else if(start > end){
+        console.error('Start gameweek is greater than end gameweek');
+        process.exit(1);
+    }
+    else if(start < 1 || start > 38){
+        console.error('Start gameweek is less than 1 or greater than 38');
+        process.exit(1);
+    }
+    else if(end < 1 || end > 38){
+        console.error('End gameweek is less than 1 or greater than 38');
+        process.exit(1);
+    }
+
+    if(!dbName || !dbCollection){
+        console.error('dbName requires dbCollection and vice vesra');
+        process.exit(1);
+    }
+
+    let baseData = await new FPLBaseObject(newPlayerAndTeamData, getNewFixtureData, fixtureDatabaseName, fixtureDatabaseCollection);
+    let retVal = [];
+
+    for(let gameWeek = start; gameWeek <= end; gameWeek++){
+        let uriValue = 'https://fantasy.premierleague.com/api/event/' + gameWeek + '/live'
+        let gwData = await processGWData(uriValue, gameWeek);
+
+        for(let j = 0; j < gwData.length; j++){
+            let tempGWDataObject = gwData[j];
+
+            if(baseData._playerDataById.get(tempGWDataObject.fplId.toString())){
+                let basePlayerData = baseData._playerDataById.get(tempGWDataObject.fplId.toString());
+                tempGWDataObject.name = basePlayerData.name;
+                tempGWDataObject.position = basePlayerData.position;
+                tempGWDataObject.team = basePlayerData.team;
+            
+
+                for(let k = 0; k < tempGWDataObject.gameweekFixtures.length; k++){
+                    let tempFixture = tempGWDataObject.gameweekFixtures[k];
+                    let tempBaseFixture = baseData._fixtureData.get(tempFixture.id.toString());
+                    tempFixture.awayTeamName = tempBaseFixture.awayTeamName;
+                    tempFixture.homeTeamName = tempBaseFixture.homeTeamName;
+                    tempFixture.dateTime = tempBaseFixture.dateTime;
+                    tempGWDataObject.gameweekFixtures[k] = tempFixture;
+                }
+            }
+            else{
+                console.error('No base data for player ID ' + tempGWDataObject.fplId.toString());
+            }
+        }
+        retVal = retVal.concat(gwData);
+    }
+
+    if(dbName && dbCollection){
+        await mongoDBMethods.insertObjectData(retVal, dbName, dbCollection, 'fplGWDataExtractor.main');
+    }
+    else{
+        console.log(retVal);
     }
 
     process.exit(0);
 }
 
-//main();
+main();
 
-module.exports = extractGWData;
+//module.exports = extractGWData;

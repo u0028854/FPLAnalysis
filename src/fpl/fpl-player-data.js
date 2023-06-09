@@ -7,7 +7,7 @@
 const unirest = require('unirest');
 const fs = require("fs");
 const { argv } = require('process');
-const textDecoder = require('./textDecode.js');
+const fplUtils = require('../fplUtils.js');
 
 const FPL_PLAYER_FILEBASE = 'c:\\EPLJava\\stat_tables\\';
 const FPL_PLAYER_FILESUFFIX = 'fpl.json';
@@ -132,7 +132,7 @@ function main(){
 
 class FPL_Player {
     constructor(name, nowCost) {
-      this.name = textDecoder.latinise(name);
+      this.name = fplUtils.removeSpecialChars(name);
       this.fplPts = 0;
       this.fplBonus = 0;
       this.bpsPts = 0;

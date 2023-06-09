@@ -1062,7 +1062,6 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 					}
 
 					System.out.println("EP: " + eplName);
-					
 					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getEPLStat(consolidatedColumnHeaders.get(i), eplPlayerData.get(eplName)));
 					tempCell.setTextBold(false);
 					tempCell.setFontColor(FootballAnalysisConstants.TRUEBLACK);

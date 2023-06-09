@@ -1,8 +1,12 @@
+'use strict';
+
 const fs = require('fs');
+const path = require('path');
 const { argv } = require('process');
 const understatJSONExtractor = require('./understatJSONExtractor.js');
-const textDecoder = require('../textDecode.js');
 const gwSchedule = require('../fpl/GameweekExtractor.js');
+const mongoDBMethods = require('../mongoDBconnector.js');
+const fplUtils = require('../fplUtils.js');
 
 const PLAYERDATA_VAR_NAME = 'rostersData';
 const SHOTDATA_VAR_NAME = 'shotsData';
@@ -16,6 +20,31 @@ async function calculateCSOdds(shotArray){
     }
 
     return csChance;
+}
+
+async function buildPlayerObject(playerData, teamName, homeTeam, awayTeam, gameLocation, csOdds, gameWeek, playerNameMap){
+    let retVal = {};
+
+    retVal.player = fplUtils.removeSpecialChars(playerData.player);
+
+    // if(playerNameMap && playerNameMap.has(retVal.player)){
+    //     retVal.player = playerNameMap.get(retVal.player);
+    // }
+
+    retVal.ustatId = playerData.id;
+    retVal._id = 'us_' + playerData.id;
+    retVal.xG = playerData.xG;
+    retVal.player_id = playerData.player_id;
+    retVal.team_id = playerData.team_id;
+    retVal.team = teamName;
+    retVal.homeTeam = homeTeam;
+    retVal.awayTeam = awayTeam;
+    retVal.gameLocation = gameLocation;
+    retVal.xA = playerData.xA;
+    retVal.cs_odds = csOdds;
+    retVal.ustatGameWeek = gameWeek;
+
+    return retVal;
 }
 
 async function findGWByDate(gwScheduleArray, gameDate, indexStart, indexEnd){
@@ -40,64 +69,86 @@ async function findGWByDate(gwScheduleArray, gameDate, indexStart, indexEnd){
     }
 }
 
-async function main(){
-    if (argv.length === 3){
-        let understatInputFile = argv[2];
-        let gwScheduleArray = await gwSchedule('false');
-        let playerArray = await understatJSONExtractor(PLAYERDATA_VAR_NAME, fs.readFileSync(understatInputFile, "utf8"), true);
-        let shotsArray = await understatJSONExtractor(SHOTDATA_VAR_NAME, fs.readFileSync(understatInputFile, "utf8"), true);
-        let matchInfo = await understatJSONExtractor(MATCHINFOR_VAR_NAME, fs.readFileSync(understatInputFile, "utf8"), false);
-        let combinedPlayers = [];
-        let homeShotData = [];
-        let awayShotData = [];
-        let matchGW = await findGWByDate(gwScheduleArray, Date.parse(matchInfo.date), 0, gwScheduleArray.length - 1);
+async function processGwFile(uStatGameFile, playerNameMap){
+    let gwScheduleArray = await gwSchedule('false');
+    let playerArray = await understatJSONExtractor(PLAYERDATA_VAR_NAME, fs.readFileSync(uStatGameFile, "utf8"), true);
+    let shotsArray = await understatJSONExtractor(SHOTDATA_VAR_NAME, fs.readFileSync(uStatGameFile, "utf8"), true);
+    let matchInfo = await understatJSONExtractor(MATCHINFOR_VAR_NAME, fs.readFileSync(uStatGameFile, "utf8"), false);
+    let retVal = [];
+    let homeShotData = [];
+    let awayShotData = [];
+    let matchGW = await findGWByDate(gwScheduleArray, Date.parse(matchInfo.date), 0, gwScheduleArray.length - 1);
 
-        for (const x in shotsArray.a){
-            awayShotData.push(shotsArray.a[x].xG);
-        }
-
-        for (const x in shotsArray.h){
-            homeShotData.push(shotsArray.h[x].xG);
-        }
-
-        let awayCSOdds = await calculateCSOdds(awayShotData);
-        let homeCSOdds = await calculateCSOdds(homeShotData);
-        
-        for (const x in playerArray.h){
-            let tempObject = {};
-            tempObject.player = textDecoder.latinise(playerArray.h[x].player);
-            tempObject.id = playerArray.h[x].id;
-            tempObject.xG = playerArray.h[x].xG;
-            tempObject.player_id = playerArray.h[x].player_id;
-            tempObject.team_id = playerArray.h[x].team_id;
-            tempObject.team = matchInfo.team_h;
-            tempObject.xA = playerArray.h[x].xA;
-            tempObject.cs_odds = homeCSOdds;
-            tempObject.game_week = matchGW;
-            combinedPlayers.push(tempObject);
-        }
-
-        for (const x in playerArray.a){
-            let tempObject = {};
-            tempObject.player = textDecoder.latinise(playerArray.a[x].player);
-            tempObject.id = playerArray.a[x].id;
-            tempObject.xG = playerArray.a[x].xG;
-            tempObject.player_id = playerArray.a[x].player_id;
-            tempObject.team_id = playerArray.a[x].team_id;
-            tempObject.team = matchInfo.team_a;
-            tempObject.xA = playerArray.a[x].xA;
-            tempObject.cs_odds = awayCSOdds;
-            tempObject.game_week = matchGW;
-            combinedPlayers.push(tempObject);
-        }
-
-        console.log(combinedPlayers);
+    for (const x in shotsArray.a){
+        awayShotData.push(shotsArray.a[x].xG);
     }
-    /**
-     * Do CS and GC model
-     * 4. Once that is done, build code to upsert into database
-     * 5. Processing includes player data as well as clean sheet percentage
-     */
+
+    for (const x in shotsArray.h){
+        homeShotData.push(shotsArray.h[x].xG);
+    }
+
+    let awayCSOdds = await calculateCSOdds(homeShotData);
+    let homeCSOdds = await calculateCSOdds(awayShotData);
+    
+    for (const x in playerArray.h){
+        retVal.push(await buildPlayerObject(playerArray.h[x], matchInfo.team_h, matchInfo.team_h, matchInfo.team_a, 'home', homeCSOdds, matchGW, playerNameMap));
+    }
+
+    for (const x in playerArray.a){
+        retVal.push(await buildPlayerObject(playerArray.a[x], matchInfo.team_a, matchInfo.team_h, matchInfo.team_a, 'away', awayCSOdds, matchGW, playerNameMap));
+    }
+
+    return retVal;
+}
+
+async function main(){
+    let understatInputDirectory = await fplUtils.getProp('uStatInputDirectory');
+    let dbName = await fplUtils.getProp('uStatGWDatabase');
+    let dbCollection = await fplUtils.getProp('uStatGWDatabase');
+    let playerNameMap = fplUtils.buildNameMap(await fplUtils.getProp('playerNameMapFile'), 4, 2);
+    let combinedPlayers = [];
+
+    if(!dbName || !dbCollection){
+        console.error('dbName requires dbCollection and vice vesra');
+        process.exit(1);
+    }
+
+    if(playerNameMap.size === 0){
+        console.error('playerNameMapFile argument invalid');
+        process.exit(1);
+    }
+
+    if(argv){
+        let argMap = fplUtils.buildArgsMap(argv);
+        let understatInputFile;
+
+        if(!understatInputDirectory && argMap.has('understatInputFile')){
+            understatInputDirectory = argMap.get('understatInputFile');
+        }
+        else if(!understatInputDirectory && !understatInputFile){
+            console.error('Invalid uStatInputFile and uStatInputDirectory arguments');
+            process.exit(1);
+        }
+
+        if(understatInputDirectory){
+            let directoryData = fs.readdirSync(understatInputDirectory);
+
+            for(let i = 0; i < directoryData.length; i++){
+                console.log('Processing file ' + directoryData[i]);
+                combinedPlayers = combinedPlayers.concat(await processGwFile(path.resolve(understatInputDirectory, directoryData[i]), playerNameMap));
+            }
+        }
+        else{
+            combinedPlayers = await processGwFile(understatInputFile, playerNameMap);    
+        }
+
+        if(dbName && dbCollection){
+            await mongoDBMethods.insertObjectData(combinedPlayers, dbName, dbCollection, 'understatMatchDataExtractor.main');
+        }
+        else{
+            console.log(combinedPlayers);
+        }
+    }
 }
 
 main();

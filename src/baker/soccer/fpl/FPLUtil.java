@@ -59,6 +59,10 @@ public class FPLUtil {
 				newPlayerObject.setAssists(Integer.parseInt(node.get("fplAssists").toString()));
 	
 				retVal.put(newPlayerObject.getPlayerName(), newPlayerObject);
+				
+				if(newPlayerObject.getPlayerName() == "Illia Zabarnyi"){
+					System.out.println(newPlayerObject);
+				}
 			}
 		}
 

@@ -24,6 +24,8 @@
 'use strict';
 
 const mongoDBMethods = require('../mongoDBconnector.js');
+const fplUtils = require('../fplUtils.js');
+const FPLBaseObject = require('./FPLBaseDataObject.js');
 const unirest = require("unirest");
 const { argv } = require('process');
 const fs = require('fs');
@@ -56,7 +58,7 @@ async function getTeamListFromFile(fileName){
     return teamList;
 }
 
-async function processGWData(uriValue, gameWeek, teamId){
+async function processGWData(uriValue, gameWeek, teamId, baseData){
     return new Promise(resolve => {
         unirest.get(uriValue).end(function(res) {
             if (res.error){
@@ -80,6 +82,10 @@ async function processGWData(uriValue, gameWeek, teamId){
                     playerObject.elementId = jsonArray.picks[i].element;
                     playerObject.multiplier = jsonArray.picks[i].multiplier;
 
+                    let basePlayerData = baseData._playerDataById.get(playerObject.elementId.toString());
+                    playerObject.name = basePlayerData.name;
+                    playerObject.position = basePlayerData.position;
+
                     if(playerObject.multiplier > 0){
                         playerSelections.push(playerObject);
                     }
@@ -93,21 +99,26 @@ async function processGWData(uriValue, gameWeek, teamId){
     });
 }
 
-async function processGWEvent(gameWeek, teamId, dbName, dbCollection){
+async function processGWEvent(gameWeek, teamId, dbName, dbCollection, baseData){
     let objectToInsert;
     if(Array.isArray(teamId)){
         objectToInsert = [];
         for(let x = 0; x < teamId.length; x++){
             let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId[x] + '/event/' + gameWeek + '/picks/';
-            objectToInsert.push(await processGWData(uriValue, gameWeek, teamId[x]));
+            objectToInsert.push(await processGWData(uriValue, gameWeek, teamId[x], baseData));
         }
     }
     else{
         let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId + '/event/' + gameWeek + '/picks/';
-        objectToInsert = await processGWData(uriValue, gameWeek, teamId);
+        objectToInsert = await processGWData(uriValue, gameWeek, teamId, baseData);
     }
 
-    await mongoDBMethods(objectToInsert, dbName, dbCollection);
+    if(dbName && dbCollection){
+        await mongoDBMethods.insertObjectData(objectToInsert, dbName, dbCollection, 'fplTeamGWDataExtractor.processGWEvent');
+    }
+    else{
+        return objectToInsert;
+    }
 }
 
 async function exportTeamGWData(start, end, teamId){
@@ -141,16 +152,18 @@ async function exportTeamGWData(start, end, teamId){
         end = 38;
     }
 
+    let baseData = await new FPLBaseObject(true, false, 'fplBaseData', 'fplBaseData');
+
     for(let gameWeek = start; gameWeek <= end; gameWeek++){
         if(Array.isArray(teamId)){
             for(let x = 0; x < teamId.length; x++){
                 let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId[x] + '/event/' + gameWeek + '/picks/';
-                retVal.push(await processGWData(uriValue, gameWeek, teamId[x]));
+                retVal.push(await processGWData(uriValue, gameWeek, teamId[x], baseData));
             }
         }
         else{
             let uriValue = 'https://fantasy.premierleague.com/api/entry/' + teamId + '/event/' + gameWeek + '/picks/';
-            retVal.push(await processGWData(uriValue, gameWeek, teamId));
+            retVal.push(await processGWData(uriValue, gameWeek, teamId, baseData));
         }
     }
 
@@ -158,29 +171,40 @@ async function exportTeamGWData(start, end, teamId){
 }
 
 async function main(){
-    let start = 1;
-    let end = 38;
+    let start = Number.parseFloat(await fplUtils.getProp('gwStart'));
+    let end = Number.parseFloat(await fplUtils.getProp('gwEnd'));
+    let dbName = await fplUtils.getProp('fplTeamGWDatabase');
+    let dbCollection = await fplUtils.getProp('fplTeamGWDatabase');
+    let teamIdFile = await fplUtils.getProp('teamIDFile');
     let teamId = 0;
-    let dbName;
-    let dbCollection;
+
+    if(isNaN(start) || isNaN(end)){
+        console.error('Invalid start and/or end parameters');
+        process.exit(1);
+    }
+    else if(start > end){
+        console.error('Start gameweek is greater than end gameweek');
+        process.exit(1);
+    }
+    else if(start < 1 || start > 38){
+        console.error('Start gameweek is less than 1 or greater than 38');
+        process.exit(1);
+    }
+    else if(end < 1 || end > 38){
+        console.error('End gameweek is less than 1 or greater than 38');
+        process.exit(1);
+    }
+
+    if(!dbName || !dbCollection){
+        console.error('dbName requires dbCollection and vice vesra');
+        process.exit(1);
+    }
 
     if(argv){
-        let argMap = new Map();
-
-        for(let x = 0; x < argv.length; x++){
-            if(x > 1){
-                let splitArg = argv[x].split('=');
-                if(splitArg.length === 2){
-                    argMap.set(splitArg[0].trim(), splitArg[1].trim());
-                }
-            }
-        }
+        let argMap = fplUtils.buildArgsMap(argv);
 
         if(argMap.has('teamId')){
             teamId = parseInt(argMap.get('teamId'));
-        }
-        else if(argMap.has('teamIdFile')){
-            teamId = await getTeamListFromFile(argMap.get('teamIdFile').trim());
         }
         else if(argMap.has('teamIdList')){
             let tempTeamIdArgs = argMap.get('teamIdList').split(',');
@@ -193,47 +217,13 @@ async function main(){
                 }
             }
         }
-
+        else{
+            teamId = await getTeamListFromFile(teamIdFile);
+        }
+        
         if((!Array.isArray(teamId) || teamId.length === 0) && (isNaN(teamId) || teamId < 1)){
             console.error('Invalid team Id');
             process.exit(1);
-        }
-
-        if(argMap.has('start') || argMap.has('end')){
-            if(!argMap.has('start') || !argMap.has('end')){
-                console.error('Invalid start and/or end parameters');
-                process.exit(1);
-            }
-
-            start = parseInt(argMap.get('start').trim());
-            end = parseInt(argMap.get('end').trim());
-
-            if(isNaN(start) || isNaN(end)){
-                console.error('Invalid start and/or end parameters');
-                process.exit(1);
-            }
-            else if(start > end){
-                console.error('Start gameweek is greater than end gameweek');
-                process.exit(1);
-            }
-            else if(start < 1 || start > 38){
-                console.error('Start gameweek is less than 1 or greater than 38');
-                process.exit(1);
-            }
-            else if(end < 1 || end > 38){
-                console.error('End gameweek is less than 1 or greater than 38');
-                process.exit(1);
-            }
-        }
-
-        if(argMap.has('dbName') || argMap.has('dbCollection')){
-            dbName = argMap.get('dbName');
-            dbCollection = argMap.get('dbCollection');
-
-            if(!dbName || !dbCollection){
-                console.error('dbName requires dbCollection and vice vesra');
-                process.exit(1);
-            }
         }
     }
     else{
@@ -241,13 +231,15 @@ async function main(){
         retuprocess.exit(1);
     }
 
+    let baseData = await new FPLBaseObject(false, false, 'fplBaseData', 'fplBaseData');
+
     for(let i = start; i <= end; i++){
-        await processGWEvent(i, teamId, dbName, dbCollection);
+        let teamGWData = await processGWEvent(i, teamId, dbName, dbCollection, baseData);
     }
 
     process.exit(0);
 }
 
-// main();
+main();
 
 module.exports = exportTeamGWData;
