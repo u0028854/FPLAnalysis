@@ -1,20 +1,19 @@
 const fs = require('fs');
-let fileName = 'c:\\EPLJava\\stat_tables\\mid.html';
 
-fs.writeFileSync(fileName, translateUTFCode(fs.readFileSync(fileName, "utf8")), (err) => {
-    if (err) console.log(err);
-});
+let fileNames = [
+    'mid', 'mid2', 'mid3', 'midSBxG', 'midSBxA',
+    'fwd', 'fwd2', 'fwd3', 'fwdSBxG', 'fwdSBxA',
+    'def', 'def2', 'def3', 'defSBxG', 'defSBxA'
+];
 
-fileName = 'c:\\EPLJava\\stat_tables\\mid2.html';
+fileNames.forEach((arrayElement) => {
+    let fileName = 'c:\\EPLJava\\stat_tables\\' + arrayElement + '.html';
 
-fs.writeFileSync(fileName, translateUTFCode(fs.readFileSync(fileName, "utf8")), (err) => {
-    if (err) console.log(err);
-});
+    console.log('Processing ' + fileName);
 
-fileName = 'c:\\EPLJava\\stat_tables\\mid3.html';
-
-fs.writeFileSync(fileName, translateUTFCode(fs.readFileSync(fileName, "utf8")), (err) => {
-    if (err) console.log(err);
+    fs.writeFileSync(fileName, translateUTFCode(fs.readFileSync(fileName, "utf8")), (err) => {
+        if (err) console.log(err);
+    });
 });
 
 function translateUTFCode(strVar){

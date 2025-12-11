@@ -103,8 +103,9 @@ public class FBRefAction {
 		org.htmlparser.util.NodeList nodes;
 
 		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("td[data-stat=\"team\"]")), new TagNameFilter("a")};
-		nodes = parser.parse(new AndFilter(tempAndFilterArray));
 		
+		nodes = parser.parse(new AndFilter(tempAndFilterArray));
+				
 		for (int i = 0; i < 20; i++){
 			NodeList parentNode = nodes.elementAt(i).getParent().getParent().getChildren();
 
@@ -113,8 +114,18 @@ public class FBRefAction {
 			
 			try{
 				teamObject.setTeamName(parentNode.elementAt(1).getChildren().elementAt(2).getChildren().elementAt(0).getText().trim());
-				teamObject.setxG(Float.parseFloat(parentNode.elementAt(10).getFirstChild() == null ? "0" : parentNode.elementAt(11).getFirstChild().getText()));
-				teamObject.setxGC(Float.parseFloat(parentNode.elementAt(11).getFirstChild() == null ? "0" : parentNode.elementAt(12).getFirstChild().getText()));
+
+				teamObject.setMatchesPlayed(Integer.parseInt(parentNode.elementAt(2).getFirstChild() == null ? "0" : parentNode.elementAt(2).getFirstChild().getText()));
+
+				teamObject.setTeamWins(Integer.parseInt(parentNode.elementAt(3).getFirstChild() == null ? "0" : parentNode.elementAt(3).getFirstChild().getText()));
+
+				teamObject.setTeamDraws(Integer.parseInt(parentNode.elementAt(4).getFirstChild() == null ? "0" : parentNode.elementAt(4).getFirstChild().getText()));
+
+				teamObject.setGoalsScored(Integer.parseInt(parentNode.elementAt(6).getFirstChild() == null ? "0" : parentNode.elementAt(6).getFirstChild().getText()));
+
+				teamObject.setxG(Float.parseFloat(parentNode.elementAt(11).getFirstChild() == null ? "0" : parentNode.elementAt(11).getFirstChild().getText()));
+
+				teamObject.setxGC(Float.parseFloat(parentNode.elementAt(12).getFirstChild() == null ? "0" : parentNode.elementAt(12).getFirstChild().getText()));
 			
 				retVal.put(teamObject.getTeamName(), teamObject);
 			}
@@ -123,6 +134,31 @@ public class FBRefAction {
 			}
 		}
 
+		parser.reset();
+		
+		NodeFilter [] x = {new HasParentFilter(new CssSelectorNodeFilter("table[id=\"stats_squads_keeper_for\"]"), true), new TagNameFilter("a")};
+		
+		nodes = parser.parse(new AndFilter(x));		
+		
+		for (int i = 0; i < 20; i++){
+			NodeList parentNode = nodes.elementAt(i).getParent().getParent().getChildren();
+
+			try{
+				String teamName = parentNode.elementAt(0).getChildren().elementAt(0).getChildren().elementAt(0).getText().trim();
+				
+				FBRefTeamObject teamObject = retVal.get(teamName);
+
+				if(teamObject != null){
+					teamObject.setCleanSheets(Integer.parseInt(parentNode.elementAt(14).getFirstChild() == null ? "0" : parentNode.elementAt(14).getFirstChild().getText()));
+
+					retVal.put(teamName, teamObject);
+				}
+			}
+			catch (Exception e){
+				System.out.println(e);
+			}
+		}
+		
 		parser.reset();
 		return retVal;
 	}

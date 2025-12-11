@@ -64,6 +64,8 @@ import baker.soccer.util.objects.FPLFSMapObject;
  * Add macth numbers to batch file config
  * Change team names in EPLUtil.mapTeams(int teamID)
  * 
+ * Modify any team mappings in mapUnderstatTeamName and mapFBRefTeamName
+ * 
  * To add new columns:
  * Add an EXCELCOLUMN**** name to FootballAnalysisConstants
  * Add that column to EPL (defineExcelEPLColumns()), Understat (defineExcelUnderstatColumns())if needed
@@ -78,7 +80,7 @@ import baker.soccer.util.objects.FPLFSMapObject;
  */
 
 public class FootballAnalysisAction {
-	public static void main(String [] args) throws Exception{
+	public static void main(String [] args) throws Exception{	
 		String option = args[0];
 		String years = args[1];
 		String matchPlayersOption = (args.length < 3 ? "" : args[2]);
@@ -144,6 +146,8 @@ public class FootballAnalysisAction {
 						//outputJSON += "}";
 						//inserts.add(Document.parse(outputJSON));
 						inserts.add(tempDoc);
+
+						System.out.println(tempDoc);
 						
 					}
 					coll.insertMany(inserts);
@@ -228,17 +232,17 @@ public class FootballAnalysisAction {
 								: FootballAnalysisConstants.STATS_TABLE_OUTPUT_4GW_FILE);
 
 			HashMap<String, HashMap<String, FSPlayerObject>> fsPlayerData = new HashMap<String, HashMap<String, FSPlayerObject>>();
-for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
+			for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 				fsPlayerData.put(FootballAnalysisConstants.PLAYER_POSITIONS[i], processFantScoutStatTables(FootballAnalysisConstants.PLAYER_POSITIONS[i]));
 			}
 
 			// Until determine how to parameterize years, use the year fomr command line
-			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(option), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years), option), FBRefAction.processFBRefPlayerHTML(), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
+			exportPlayerAnalysisExcel(fsPlayerData, FPLUtil.processEPLPlayerSeasonAction(option), UnderstatAction.processUnderstatXGPlayerJSON(Integer.parseInt(years), option), buildFPLFSPlayerMap(FootballAnalysisUtil.getFileDataByLine(FootballAnalysisConstants.FPL_FS_PLAYER_MAP)), excelOutputFile);
 		}
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_MATCH_ANALYSIS)){
 			String gameWeeks = args.length != 3 ? "" : args[2];
 			
-			exportTeamTableData(processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1), UnderstatAction.processUnderstatXGTeamJSON(), FBRefAction.processFBRefTeamHTML(), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "teamtable" + gameWeeks + ".csv");
+			exportTeamTableData(processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1), UnderstatAction.processUnderstatXGTeamJSON(), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "teamtable" + gameWeeks + ".csv");
 		}
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_ANALYSIS)){
 			/*
@@ -282,8 +286,8 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		}
 	}
 
-	private static void exportTeamTableData(HashMap<String, FSTeamTableObject> teamData, HashMap<String, UnderstatTeamObject> understatTeamData, HashMap<String, FBRefTeamObject> fbRefTeamData, String fileName) throws Exception {
-		String fileData = "Team,OPP Big Chances,OPP ShotsOnTarget,OPP Goals,OPP xG,Big Chances,ShotsOnTarget,Goals,xG,Games Played, UStat xG, UStat OPP xG, FBRef xG, FBRef OPP xG\n"; 
+	private static void exportTeamTableData(HashMap<String, FSTeamTableObject> teamData, HashMap<String, UnderstatTeamObject> understatTeamData, String fileName) throws Exception {
+		String fileData = "Team,OPP Big Chances,OPP ShotsOnTarget,OPP Goals,OPP xG,Big Chances,ShotsOnTarget,Goals,xG,Games Played, UStat xG, UStat OPP xG\n"; 
 		
 		Iterator<String> iterator = teamData.keySet().iterator();
 		
@@ -292,8 +296,10 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 			fileData += teamData.get(tempStr).csvOutput();
 
 			UnderstatTeamObject tempUnderstatTeam = understatTeamData.get(FootballAnalysisConstants.mapUnderstatTeamName(tempStr));
-			FBRefTeamObject tempFBRefTeam = fbRefTeamData.get(FootballAnalysisConstants.mapFBRefTeamName(tempStr));
-			fileData += "," + tempUnderstatTeam.sumXG() + "," + tempUnderstatTeam.sumXGA() + "," + (tempFBRefTeam == null ? 0 : tempFBRefTeam.getxG()) + "," + (tempFBRefTeam == null ? 0 : tempFBRefTeam.getxGC()) + "\n";
+			
+			fileData += "," + tempUnderstatTeam.sumXG() 
+				+ "," + tempUnderstatTeam.sumXGA()
+				+ "\n";
 		}
 		FootballAnalysisUtil.writeFile(fileName, fileData);
 	}
@@ -357,24 +363,32 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		HashMap<String, FSPlayerObject> retVal = new HashMap<String, FSPlayerObject>();
 		HashMap<String, FSPlayerObject> tempPlayerData1 = new HashMap<String, FSPlayerObject>();
 		HashMap<String, FSPlayerObject> tempPlayerData2 = new HashMap<String, FSPlayerObject>();
+		HashMap<String, FSPlayerObject> tempPlayerData3 = new HashMap<String, FSPlayerObject>();
+		HashMap<String, FSPlayerObject> tempPlayerData4 = new HashMap<String, FSPlayerObject>();
 
 		switch (posOption){
 		case "FWD":
-			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE1);
-			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE2);
-			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE3);
+			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE1, false);
+			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE2, false);
+			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_TABLE3, false);
+			tempPlayerData3 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_SBxG, true);
+			tempPlayerData4 = processFantScoutStatTablesWorker(FootballAnalysisConstants.FWD_STATS_SBxA, true);
 			break;
 
 		case "MID":
-			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE1);
-			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE2);
-			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE3);
+			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE1, false);
+			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE2, false);
+			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_TABLE3, false);
+			tempPlayerData3 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_SBxG, true);
+			tempPlayerData4 = processFantScoutStatTablesWorker(FootballAnalysisConstants.MID_STATS_SBxA, true);
 			break;
 
 		case "DEF":
-			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE1);
-			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE2);
-			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE3);
+			retVal = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE1, false);
+			tempPlayerData1 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE2, false);
+			tempPlayerData2 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_TABLE3, false);
+			tempPlayerData3 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_SBxG, true);
+			tempPlayerData4 = processFantScoutStatTablesWorker(FootballAnalysisConstants.DEF_STATS_SBxA, true);
 			break;
 		}
 
@@ -386,6 +400,8 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 			FSPlayerObject temp1 = retVal.get(next);
 			FSPlayerObject temp2 = tempPlayerData1.get(next);
 			FSPlayerObject temp3 = tempPlayerData2.get(next);
+			FSPlayerObject temp4 = tempPlayerData3.get(next);
+			FSPlayerObject temp5 = tempPlayerData4.get(next);
 
 			// Check to see if both result sets have same player.  If so, combine values into retVal.
 			if(temp2 != null){
@@ -395,6 +411,14 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 			if(temp3 != null){
 				temp1.addStatTableData(temp3.getStatTableData());
 			}
+			
+			if(temp4 != null){
+				temp1.addStatTableData(temp4.getStatTableData());
+			}
+			
+			if(temp5 != null){
+				temp1.addStatTableData(temp5.getStatTableData());
+			}
 
 			retVal.put(next, temp1);
 		}
@@ -402,7 +426,7 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		return retVal;
 	}
 
-	private static HashMap<String, FSPlayerObject> processFantScoutStatTablesWorker(String fileName) throws Exception{
+	private static HashMap<String, FSPlayerObject> processFantScoutStatTablesWorker(String fileName, Boolean statBomb) throws Exception{
 		HashMap<String, FSPlayerObject> retVal = new HashMap<String, FSPlayerObject>();
 
 		Parser parser = new Parser (fileName);
@@ -410,37 +434,65 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 
 		// Set up node collector
 		org.htmlparser.util.NodeList nodes;
+		String cssNodeFilter;
 
-		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter("table[class=\"stats draggable fixed3\"]"), true), new TagNameFilter("tr"), new NotFilter(new HasChildFilter(new TagNameFilter("th"), true))};
+		if(statBomb){
+			cssNodeFilter = "table[class=\"stats\"]";
+		}
+		else{
+			cssNodeFilter = "table[class=\"stats draggable fixed3\"]";
+		}
+
+		NodeFilter [] tempAndFilterArray = {new HasParentFilter(new CssSelectorNodeFilter(cssNodeFilter), true), new TagNameFilter("tr"), new NotFilter(new HasChildFilter(new TagNameFilter("th"), true))};
 		nodes = parser.parse(new AndFilter(tempAndFilterArray));
 
 		for (int i = 0; i < nodes.size(); i++){
 			// Create data objects
 			FSPlayerObject playerObject = new FSPlayerObject();
 			HashMap<String,String> playerValues = playerObject.getStatTableData();
+			
+			if(statBomb){
+				org.htmlparser.util.NodeList titleNodeList = new org.htmlparser.util.NodeList();
+				nodes.elementAt(i).collectInto(titleNodeList,  new CssSelectorNodeFilter("div[class=\"profile-title\"]"));
+			
+				String [] teamPositionArray = titleNodeList.elementAt(0).getLastChild().getText().trim().replace("(", "").replace(")","").split(",");
+				playerObject.setPlayerPos(teamPositionArray[1].trim());
+			}
+
+			if(playerObject.getPlayerTeam() == null || playerObject.getPlayerTeam().equals("")){
+				org.htmlparser.util.NodeList teamNodeList = new org.htmlparser.util.NodeList();
+				nodes.elementAt(i).collectInto(teamNodeList, new CssSelectorNodeFilter("td[class=\"nowrap\"]"));
+				
+				String teamname = teamNodeList.elementAt(0).getLastChild().getText().trim();
+				playerValues.put("Team", teamname);
+				playerObject.addTeam(teamname);
+			}
 
 			org.htmlparser.util.NodeList tempNodeList = new org.htmlparser.util.NodeList();
-			nodes.elementAt(i).collectInto(tempNodeList, new CssSelectorNodeFilter("td[class=\"nowrap\"]"));
+			nodes.elementAt(i).collectInto(tempNodeList, new HasAttributeFilter("title"));
 
-			playerValues.put("Team",tempNodeList.elementAt(0).getFirstChild().getNextSibling().getNextSibling().getText().trim());
-
-			org.htmlparser.util.NodeList tempNodeList2 = new org.htmlparser.util.NodeList();
-
-			nodes.elementAt(i).collectInto(tempNodeList2, new HasAttributeFilter("title"));
-
-			for (int j = 0; j < tempNodeList2.size(); j++){
+			for (int j = 0; j < tempNodeList.size(); j++){
 				// Get the nodes and value of attribute "title"
-				Tag statElement = (Tag)tempNodeList2.elementAt(j);
+				Tag statElement = (Tag)tempNodeList.elementAt(j);
 				String tempAttrValue = StringEscapeUtils.unescapeHtml4(statElement.getAttribute("title"));
 
 				// If player name not created, create it
-				if(j == 0 && (playerObject.getName() == null || playerObject.getName().equals(""))){
-					playerObject.setName(tempAttrValue);
+				if(j == 0){
+					if(playerObject.getName() == null || playerObject.getName().equals("")){
+						playerObject.setName(tempAttrValue);
+					}
+				}
+				else if(statBomb && j == 1 && (playerValues.get("Team") == null || playerValues.get("Team").equals("")) && (playerObject.getPlayerTeam() == null || playerObject.getPlayerTeam().equals(""))){
+						playerValues.put("Team", FootballAnalysisConstants.getFFTeamMap(tempAttrValue));
+						playerObject.addTeam(FootballAnalysisConstants.getFFTeamMap(tempAttrValue));						
 				}
 				// Add stat key/value pair to Hash
-				else{
+				else {
 					String [] tempAttrPair = tempAttrValue.split(":");
-					playerValues.put(tempAttrPair[0].trim(),tempAttrPair[1].trim());
+					String keyVal = statBomb ? "SB-" : "";
+					keyVal += tempAttrPair[0].trim();
+					
+					playerValues.put(keyVal,tempAttrPair[1].trim());
 				}
 			}
 
@@ -852,14 +904,14 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		return retVal;
 	}
 
-	private static void exportPlayerAnalysisExcel(HashMap<String, HashMap<String, FSPlayerObject>> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FBRefPlayerObject> fbRefPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap, String fileName) throws Exception{
+	private static void exportPlayerAnalysisExcel(HashMap<String, HashMap<String, FSPlayerObject>> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap, String fileName) throws Exception{
 		XSSFWorkbook outputWorkbook = new XSSFWorkbook();
 
 		Iterator<String> playerIterator = playerObjects.keySet().iterator();
 
 		while (playerIterator.hasNext()){
 			String positionName = playerIterator.next();
-			outputWorkbook = ExcelOutputUtil.buildAnalysisExcel(outputWorkbook, exportAnalysisExcelWorker(positionName, playerObjects.get(positionName), eplPlayerData, understatPlayerData, fbRefPlayerData, fplFsPlayerMap), positionName, FootballAnalysisConstants.EXCELBLUECOLUMNCOUNT, FootballAnalysisConstants.EXCELTOTALCOLUMNCOUNT);				
+			outputWorkbook = ExcelOutputUtil.buildAnalysisExcel(outputWorkbook, exportAnalysisExcelWorker(positionName, playerObjects.get(positionName), eplPlayerData, understatPlayerData, fplFsPlayerMap), positionName, FootballAnalysisConstants.EXCELBLUECOLUMNCOUNT, FootballAnalysisConstants.EXCELTOTALCOLUMNCOUNT);				
 		}
 
 		FileOutputStream out = new FileOutputStream(new File(fileName));	
@@ -868,7 +920,7 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		outputWorkbook.close();
 	}
 
-	private static ArrayList<ArrayList<ExcelCellObject>> exportAnalysisExcelWorker(String positionName, HashMap<String, FSPlayerObject> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FBRefPlayerObject> fbRefPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap) throws Exception{
+	private static ArrayList<ArrayList<ExcelCellObject>> exportAnalysisExcelWorker(String positionName, HashMap<String, FSPlayerObject> playerObjects, HashMap<String, FPLPlayerObject> eplPlayerData, HashMap<String, UnderstatPlayerObject> understatPlayerData, HashMap<String, FPLFSMapObject> fplFsPlayerMap) throws Exception{
 		ArrayList<ArrayList<ExcelCellObject>> excelData = new ArrayList<ArrayList<ExcelCellObject>>();
 
 		ArrayList<ExcelCellObject> tempRowData = new ArrayList<ExcelCellObject>();
@@ -1021,7 +1073,7 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 
 					System.out.println("US: " + understatName);
 
-					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getUnderstatStat(consolidatedColumnHeaders.get(i), understatPlayerData.get(understatName)));
+					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getUnderstatStat(consolidatedColumnHeaders.get(i), understatPlayerData.get(understatName)));	
 					tempCell.setTextBold(false);
 					tempCell.setFontColor(FootballAnalysisConstants.TRUEBLACK);
 					tempCell.setFillColor(FootballAnalysisConstants.TRUEWHITE);
@@ -1029,30 +1081,6 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 					tempCell.setBorderColor(FootballAnalysisConstants.TRUEBLACK);
 					tempCell.setHorizontalAlignment(XSSFCellStyle.ALIGN_CENTER);
 					tempCell.setDataFormat(FootballAnalysisUtil.getCellFormat(consolidatedColumnHeaders.get(i)));
-				}
-				else if(FootballAnalysisConstants.EXCELFBREFCOLUMNS.contains((consolidatedColumnHeaders.get(i)))){
-					String fbRefName = tempPlayer.getName();
-
-					if(fplFsPlayerMap.containsKey(fbRefName)){
-						fbRefName = fplFsPlayerMap.get(tempPlayer.getName()).getFBRefPlayerName();
-					}
-
-					System.out.println("FBREF: " + fbRefName);
-
-					if(fbRefPlayerData.get(fbRefName) != null){
-						tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getFBRefStat(consolidatedColumnHeaders.get(i), fbRefPlayerData.get(fbRefName)));
-						tempCell.setTextBold(false);
-						tempCell.setFontColor(FootballAnalysisConstants.TRUEBLACK);
-						tempCell.setFillColor(FootballAnalysisConstants.TRUEWHITE);
-						tempCell.setThinBorder(true);
-						tempCell.setBorderColor(FootballAnalysisConstants.TRUEBLACK);
-						tempCell.setHorizontalAlignment(XSSFCellStyle.ALIGN_CENTER);
-						tempCell.setDataFormat(FootballAnalysisUtil.getCellFormat(consolidatedColumnHeaders.get(i)));
-					}
-					else{
-						System.out.println(fbRefName + " is null");
-						tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, 0.00);
-					}
 				}
 				else if(FootballAnalysisConstants.EXCELEPLCOLUMNS.contains((consolidatedColumnHeaders.get(i)))){
 					String eplName = tempPlayer.getName();
@@ -1062,7 +1090,13 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 					}
 
 					System.out.println("EP: " + eplName);
-					tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getEPLStat(consolidatedColumnHeaders.get(i), eplPlayerData.get(eplName)));
+					
+					if(eplName.equals("Brandon Aguilera")){
+						tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, 0);
+					}
+					else{
+						tempCell = new ExcelCellObject(XSSFCell.CELL_TYPE_NUMERIC, FootballAnalysisUtil.getEPLStat(consolidatedColumnHeaders.get(i), eplPlayerData.get(eplName)));
+					}
 					tempCell.setTextBold(false);
 					tempCell.setFontColor(FootballAnalysisConstants.TRUEBLACK);
 					tempCell.setFillColor(FootballAnalysisConstants.TRUEWHITE);
@@ -1130,8 +1164,8 @@ for (int i=0; i < FootballAnalysisConstants.PLAYER_POSITIONS.length; i++){
 		for (int i = 0; i < fileData.size(); i++){
 			String [] fileVals = fileData.get(i).split(",");
 			
-			if (fileVals.length == 7){
-				retVal.put(fileVals[0], new FPLFSMapObject(fileVals[0], fileVals[1], fileVals[2], fileVals[3], fileVals[4], fileVals[5], fileVals[6]));
+			if (fileVals.length == 6){
+				retVal.put(fileVals[0], new FPLFSMapObject(fileVals[0], fileVals[1], fileVals[2], fileVals[3], fileVals[4], fileVals[5]));
 			}
 			else if(fileVals[0].equals("")){}
 			else{

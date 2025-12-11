@@ -1,25 +1,8 @@
 'use strict';
 
-//import fetch from 'node-fetch';
-
 var unirest = require("unirest");
 var fs = require("fs");
 const fetch = require('node-fetch');
-
-// var fileName = "test.html";
-// var req = unirest.get("https://fbref.com/en/comps/9/Premier-League-Stats");
-
-// req.end(function(res) {
-//     if (res.error) throw new Error(res.error);
-
-//     let jsonArray = res.toJSON().body.events;
-    
-//     for (let i = 0; i < jsonArray.length; i++){
-//         fs.appendFileSync(fileName, jsonArray[i].id + "," + Date.parse(jsonArray[i].deadline_time) + "\n", (err) => {
-//             if (err) console.log(err);
-//         });
-//     }
-// });
 
 fetch("https://fbref.com/en/comps/9/Premier-League-Stats", {
   "headers": {

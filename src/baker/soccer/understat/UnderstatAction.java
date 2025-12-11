@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -25,6 +26,7 @@ import baker.soccer.understat.objects.UnderstatPlayerObject;
 import baker.soccer.understat.objects.UnderstatTeamObject;
 import baker.soccer.util.FootballAnalysisConstants;
 import baker.soccer.util.FootballAnalysisUtil;
+import baker.soccer.util.objects.FPLFSMapObject;
 
 public class UnderstatAction {
 	public static void main(String [] args) throws Exception{
@@ -72,52 +74,38 @@ public class UnderstatAction {
 
 	private static HashMap<String, UnderstatPlayerObject> processPlayerJSON(int eplSeason, String option) throws Exception{
 		HashMap<String, UnderstatPlayerObject> retVal = new HashMap<String, UnderstatPlayerObject>();
+		String fileName = "";
 
-		//create ObjectMapper instance
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-		HttpURLConnection con = null;
-		String urlParameters = "season=" + Integer.toString(eplSeason);
-
-		for (int i=0; i < FootballAnalysisConstants.USAPIPARAMS.length; i++){
-			urlParameters += "&" + FootballAnalysisConstants.USAPIPARAMS[i];
+		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_ARG)){
+			fileName = FootballAnalysisConstants.USPLAYERINPUTFILENAME;
 		}
-		
-		if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) || option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_4GW_ARG)){
-			urlParameters += "&date_start=" + (new SimpleDateFormat("yyyy-MM-dd").format(FootballAnalysisUtil.getGameweekStart(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG) ? 6 : 4)) + "+00%3A00%3A00");
-		}
-		
-		System.out.println(urlParameters);
-		byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_PLAYER_ANALYSIS_EXCEL_6GW_ARG)){
+			fileName = FootballAnalysisConstants.USPLAYERINPUT6GWFILENAME;
+		}		
 
-		try {
-			URL myurl = new URL(FootballAnalysisConstants.USAPIURL);
-			
-			con = (HttpURLConnection) myurl.openConnection();
-			con.setDoOutput(true);
-			con.setRequestMethod("POST");
-			con.setRequestProperty("User-Agent", "Java client");
-			con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		ArrayList<String> fileData = FootballAnalysisUtil.getFileDataByLine(fileName);
 
-			try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-				wr.write(postData);
+		for (int i = 0; i < fileData.size(); i++){
+			String [] fileVals = fileData.get(i).split(",");
+						
+			if (fileVals.length == 7 || fileVals.length == 8){
+				retVal.put(
+						fileVals[0], 
+						new UnderstatPlayerObject(
+								fileVals[0], 
+								fileVals[1], 
+								fileVals[2], 
+								fileVals[3], 
+								fileVals[4], 
+								fileVals[5],
+								fileVals[6]));
 			}
-
-			UnderstatBaseJSONData uStatJson = new UnderstatBaseJSONData(objectMapper.readTree(con.getInputStream()));
-
-			Iterator<UnderstatPlayerObject> iterator = uStatJson.getPlayerObjects().iterator();
-
-			while(iterator.hasNext()){
-				UnderstatPlayerObject tempPlayer = iterator.next();
-				retVal.put(tempPlayer.getPlayer_name(), tempPlayer);
+			else{
+				for(int j = 0; j < fileVals.length; j++){
+					System.out.println(j + " : " + fileVals[j]);
+				}
+				throw new Exception("FileVals length is " + fileVals.length);
 			}
-		}
-		catch(Exception e){
-			System.err.println(e);
-		}
-		finally {
-			con.disconnect();
 		}
 
 		return retVal;

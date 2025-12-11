@@ -40,6 +40,6 @@ function main(){
     getGWSchedule('true');
 }
 
-//main();
+main();
 
-module.exports = getGWSchedule;
+//module.exports = getGWSchedule;

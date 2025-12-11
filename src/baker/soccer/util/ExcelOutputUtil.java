@@ -55,23 +55,28 @@ public class ExcelOutputUtil {
 				outputCell.setCellStyle(cellStyle);
 				outputCell.setCellType(individualCell.getCellType());
 
-				switch(outputCell.getCellType()) {
-				case Cell.CELL_TYPE_BOOLEAN:
-					outputCell.setCellValue((boolean)individualCell.getCellData());
-					break;
-				case Cell.CELL_TYPE_NUMERIC:
-					outputCell.setCellValue((double)individualCell.getCellData());
-					break;
-				case Cell.CELL_TYPE_STRING:
-					outputCell.setCellValue((String)individualCell.getCellData());
-					break;
-				case Cell.CELL_TYPE_FORMULA:
-					outputCell.setCellFormula((String)individualCell.getCellData());
-					break;
-				case Cell.CELL_TYPE_ERROR:
-					break;
-				case Cell.CELL_TYPE_BLANK:
-					break;
+				try{
+					switch(outputCell.getCellType()) {
+					case Cell.CELL_TYPE_BOOLEAN:
+						outputCell.setCellValue((boolean)individualCell.getCellData());
+						break;
+					case Cell.CELL_TYPE_NUMERIC:
+						outputCell.setCellValue((double)individualCell.getCellData());
+						break;
+					case Cell.CELL_TYPE_STRING:
+						outputCell.setCellValue((String)individualCell.getCellData());
+						break;
+					case Cell.CELL_TYPE_FORMULA:
+						outputCell.setCellFormula((String)individualCell.getCellData());
+						break;
+					case Cell.CELL_TYPE_ERROR:
+						break;
+					case Cell.CELL_TYPE_BLANK:
+						break;
+					}
+				}
+				catch(ClassCastException e){
+					System.out.println(individualCell.getCellData());					
 				}
 			}
 		}

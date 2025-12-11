@@ -125,7 +125,7 @@ public class FootballAnalysisUtil {
 				retVal = buildCellMinusSumFormula(FootballAnalysisConstants.EXCELCOLUMNSHOTS,FootballAnalysisConstants.EXCELCOLUMNGSPK, FootballAnalysisConstants.EXCELCOLUMNPKMISS, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNNPXGSHOT)){
-				retVal = buildCellDividedByCellFormula(FootballAnalysisConstants.EXCELCOLUMNNPSHOTS90,FootballAnalysisConstants.EXCELCOLUMNFBREFNPXG, maxColumCount, maxRowCount, currentRowCount);
+				retVal = buildCellDividedByCellFormula(FootballAnalysisConstants.EXCELCOLUMNNPSHOTS,FootballAnalysisConstants.EXCELCOLUMNSBNPXG, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSHEAD90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNGSHEAD, 90, maxColumCount, maxRowCount, currentRowCount);
@@ -160,8 +160,17 @@ public class FootballAnalysisUtil {
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNICT90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNICT, 90, maxColumCount, maxRowCount, currentRowCount);
 			}
-			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXG) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXA) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNBASEXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNBASEBPS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNUXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNUXNPPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFSXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFSNPXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFBREFXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFBREFNPXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGNPXPTS)){
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXG) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXA) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNBASEXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNBASEBPS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNUXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNUXNPPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSBXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSBNPXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFSXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFSNPXPTS90) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGXPTS) || columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGNPXPTS)){
 				retVal = buildCustomPredefinedFormulas(positionName, columnName, maxColumCount, maxRowCount, currentRowCount);
+			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSBXG90)){
+				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSBXG, 90, maxColumCount, maxRowCount, currentRowCount);
+			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSBNPXG90)){
+				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSBNPXG, 90, maxColumCount, maxRowCount, currentRowCount);
+			}
+			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNSBXA90)){
+				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNSBXA, 90, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNFSXG90)){
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNFSXG, 90, maxColumCount, maxRowCount, currentRowCount);
@@ -173,23 +182,23 @@ public class FootballAnalysisUtil {
 				retVal = buildCellDividedByCellMultipledByValueFormula(FootballAnalysisConstants.EXCELCOLUMNMINS,FootballAnalysisConstants.EXCELCOLUMNFSXA, 90, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGXG)){
-				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNFBREFXG, FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90};
+				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90, FootballAnalysisConstants.EXCELCOLUMNSBXG90};
 				retVal = buildCellAveragedFormula(FootballAnalysisConstants.EXCELCOLUMNAVGXG, avgColumns, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGNPXG)){
-				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNFBREFNPXG, FootballAnalysisConstants.EXCELCOLUMNUNPXG, FootballAnalysisConstants.EXCELCOLUMNFSNPXG90};
+				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNUNPXG, FootballAnalysisConstants.EXCELCOLUMNFSNPXG90, FootballAnalysisConstants.EXCELCOLUMNSBNPXG90};
 				retVal = buildCellAveragedFormula(FootballAnalysisConstants.EXCELCOLUMNAVGNPXG, avgColumns, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGXA)){
-				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNFBREFXA, FootballAnalysisConstants.EXCELCOLUMNUXA, FootballAnalysisConstants.EXCELCOLUMNFSXA90};
+				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNUXA, FootballAnalysisConstants.EXCELCOLUMNFSXA90, FootballAnalysisConstants.EXCELCOLUMNSBXA90};
 				retVal = buildCellAveragedFormula(FootballAnalysisConstants.EXCELCOLUMNAVGXA, avgColumns, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGXPTS)){
-				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNFBREFXG, FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90};
+				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90, FootballAnalysisConstants.EXCELCOLUMNSBXG90};
 				retVal = buildCellAveragedFormula(FootballAnalysisConstants.EXCELCOLUMNAVGXG, avgColumns, maxColumCount, maxRowCount, currentRowCount);
 			}
 			else if(columnName.equals(FootballAnalysisConstants.EXCELCOLUMNAVGNPXPTS)){
-				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNFBREFXG, FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90};
+				String [] avgColumns = {FootballAnalysisConstants.EXCELCOLUMNUXG, FootballAnalysisConstants.EXCELCOLUMNFSXG90, FootballAnalysisConstants.EXCELCOLUMNSBXG90};
 				retVal = buildCellAveragedFormula(FootballAnalysisConstants.EXCELCOLUMNAVGXG, avgColumns, maxColumCount, maxRowCount, currentRowCount);
 			}
 		}
@@ -627,6 +636,66 @@ public class FootballAnalysisUtil {
 					+ currentRowCount
 					+ ",FALSE)";
 		}
+		else if (columnHeader.equals(FootballAnalysisConstants.EXCELCOLUMNSBXPTS90)){
+			int pointsPerGoal = 0;
+
+			if(playerPosition.equals("MID")){
+				pointsPerGoal = 5;
+			}
+			else if(playerPosition.equals("DEF")){
+				pointsPerGoal = 6;
+			}
+			else{
+				pointsPerGoal = 4;
+			}
+
+			retVal = pointsPerGoal
+					+ "*HLOOKUP(\""
+					+ FootballAnalysisConstants.EXCELCOLUMNSBXG90
+					+ "\",A1:"
+					+ getColumnAlpha(maxColumnCount)
+					+ maxRowCount
+					+ ","
+					+ currentRowCount
+					+ ",FALSE)+3*HLOOKUP(\""
+					+ FootballAnalysisConstants.EXCELCOLUMNSBXA90
+					+ "\",A1:"
+					+ getColumnAlpha(maxColumnCount)
+					+ maxRowCount
+					+ ","
+					+ currentRowCount
+					+ ",FALSE)";
+		}
+		else if (columnHeader.equals(FootballAnalysisConstants.EXCELCOLUMNSBNPXPTS90)){
+			int pointsPerGoal = 0;
+
+			if(playerPosition.equals("MID")){
+				pointsPerGoal = 5;
+			}
+			else if(playerPosition.equals("DEF")){
+				pointsPerGoal = 6;
+			}
+			else{
+				pointsPerGoal = 4;
+			}
+
+			retVal = pointsPerGoal
+					+ "*HLOOKUP(\""
+					+ FootballAnalysisConstants.EXCELCOLUMNSBNPXG90
+					+ "\",A1:"
+					+ getColumnAlpha(maxColumnCount)
+					+ maxRowCount
+					+ ","
+					+ currentRowCount
+					+ ",FALSE)+3*HLOOKUP(\""
+					+ FootballAnalysisConstants.EXCELCOLUMNSBXA90
+					+ "\",A1:"
+					+ getColumnAlpha(maxColumnCount)
+					+ maxRowCount
+					+ ","
+					+ currentRowCount
+					+ ",FALSE)";
+		}
 		else if (columnHeader.equals(FootballAnalysisConstants.EXCELCOLUMNFSXPTS90)){
 			int pointsPerGoal = 0;
 
@@ -680,66 +749,6 @@ public class FootballAnalysisUtil {
 					+ currentRowCount
 					+ ",FALSE)+3*HLOOKUP(\""
 					+ FootballAnalysisConstants.EXCELCOLUMNFSXA90
-					+ "\",A1:"
-					+ getColumnAlpha(maxColumnCount)
-					+ maxRowCount
-					+ ","
-					+ currentRowCount
-					+ ",FALSE)";
-		}
-		else if (columnHeader.equals(FootballAnalysisConstants.EXCELCOLUMNFBREFXPTS)){
-			int pointsPerGoal = 0;
-
-			if(playerPosition.equals("MID")){
-				pointsPerGoal = 5;
-			}
-			else if(playerPosition.equals("DEF")){
-				pointsPerGoal = 6;
-			}
-			else{
-				pointsPerGoal = 4;
-			}
-
-			retVal = pointsPerGoal
-					+ "*HLOOKUP(\""
-					+ FootballAnalysisConstants.EXCELCOLUMNFBREFXG
-					+ "\",A1:"
-					+ getColumnAlpha(maxColumnCount)
-					+ maxRowCount
-					+ ","
-					+ currentRowCount
-					+ ",FALSE)+3*HLOOKUP(\""
-					+ FootballAnalysisConstants.EXCELCOLUMNFBREFXA
-					+ "\",A1:"
-					+ getColumnAlpha(maxColumnCount)
-					+ maxRowCount
-					+ ","
-					+ currentRowCount
-					+ ",FALSE)";
-		}
-		else if (columnHeader.equals(FootballAnalysisConstants.EXCELCOLUMNFBREFNPXPTS)){
-			int pointsPerGoal = 0;
-
-			if(playerPosition.equals("MID")){
-				pointsPerGoal = 5;
-			}
-			else if(playerPosition.equals("DEF")){
-				pointsPerGoal = 6;
-			}
-			else{
-				pointsPerGoal = 4;
-			}
-
-			retVal = pointsPerGoal
-					+ "*HLOOKUP(\""
-					+ FootballAnalysisConstants.EXCELCOLUMNFBREFNPXG
-					+ "\",A1:"
-					+ getColumnAlpha(maxColumnCount)
-					+ maxRowCount
-					+ ","
-					+ currentRowCount
-					+ ",FALSE)+3*HLOOKUP(\""
-					+ FootballAnalysisConstants.EXCELCOLUMNFBREFXA
 					+ "\",A1:"
 					+ getColumnAlpha(maxColumnCount)
 					+ maxRowCount
@@ -1016,6 +1025,8 @@ public class FootballAnalysisUtil {
 	
 	public static java.util.Date getGameweekStart(int previousGWCount) throws Exception{
 		int currentGw = findCurrentGameweek(FootballAnalysisConstants.FPL_GAMEWEEK_DATES, 0, FootballAnalysisConstants.FPL_GAMEWEEK_DATES.size(), new java.util.Date());
+		
+		System.out.println("currenmtGW " + currentGw);
 		return FootballAnalysisConstants.FPL_GAMEWEEK_DATES.get((currentGw - previousGWCount) < 0 ? 0 : (currentGw - previousGWCount));
 	}
 
@@ -1041,7 +1052,7 @@ public class FootballAnalysisUtil {
 	public static String stripAccents(String str){
 		String retVal = StringUtils.stripAccents(str);
 		
-		return retVal.replace("ð", "d").replace("ø", "o").replace("Ø","O").replace("ß", "ss").replace("&#039;", "'");
+		return retVal.replace("ð", "d").replace("ø", "o").replace("Ø","O").replace("ß", "ss").replace("&#039;", "'").replace("æ", "ae").replace("’", "'");
 	}
 	
 	public static void removeHTMLComments(String inputFileName, String outputFileName) throws Exception{

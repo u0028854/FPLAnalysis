@@ -10,6 +10,18 @@ public class UnderstatPlayerObject {
 	private float xA;
 	private String position;
 	private String team_title;
+	
+	public UnderstatPlayerObject(String playerNameString, String timeString, String xGString, 
+			String npxGString, String xAString, String positionString, String teamTitleString){
+		super();
+		this.player_name = playerNameString;
+		this.time = Integer.parseInt(timeString);
+		this.xG = Float.parseFloat(xGString);
+		this.npxG = Float.parseFloat(npxGString);
+		this.xA = Float.parseFloat(xAString);
+		this.position = positionString;
+		this.team_title = teamTitleString;
+	}
 
 	public String getPlayer_name() {
 		return player_name;

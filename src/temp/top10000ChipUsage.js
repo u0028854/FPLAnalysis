@@ -15,23 +15,16 @@ function setChipTracker(){
     retVal.set('BB',0);
     retVal.set('BBFH',0);
     retVal.set('BBFHTXC',0);
-    retVal.set('BBFHTXCWC',0);
-    retVal.set('BBFHWC',0);
     retVal.set('BBTXC',0);
-    retVal.set('BBTXCWC',0);
     retVal.set('BBWC',0);
     retVal.set('FH',0);
     retVal.set('FHTXC',0);
-    retVal.set('FHTXCWC',0);
     retVal.set('FHWC',0);
     retVal.set('FH',0);
     retVal.set('FHTXC',0);
-    retVal.set('FHTXCWC',0);
     retVal.set('FHWC',0);
     retVal.set('TXC',0);
-    retVal.set('TXCWC',0);
     retVal.set('TXCFH',0);
-    retVal.set('WC',0);
 
     try {
         const data = fs.readFileSync(fileName, 'utf8', 'w');
@@ -58,15 +51,10 @@ async function getTeamChips(teamData, consoleOutput){
     try{
         let teamChips = teamData.toJSON().body.chips;
         
-        let teamChipTracker = ['WC', 'FH', 'BB', 'TXC'];
+        let teamChipTracker = ['BB', 'TXC', 'FH'];
         
         for(let k = 0; k < teamChips.length; k++){
             switch (teamChips[k].name) {
-                case 'wildcard':
-                    if(teamChips[k].event > 17){
-                        teamChipTracker[teamChipTracker.indexOf('WC')] = null;
-                    }
-                    break;
                 case 'freehit':
                     teamChipTracker[teamChipTracker.indexOf('FH')] = null;
                     break;
@@ -134,8 +122,8 @@ async function execute(startPageNumber, endPageNumber){
 }
 
 async function main(){
-    let startPageNumber = 1;
-    let endPageNumber = 200;
+    let startPageNumber = 1000;
+    let endPageNumber = 1200;
     if(argv && argv.length === 4){
         startPageNumber = argv[2];
         endPageNumber = argv[3];

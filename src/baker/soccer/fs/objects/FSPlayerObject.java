@@ -73,6 +73,10 @@ public class FSPlayerObject {
 	public void setPlayerTeams(HashSet<String> playerTeams) {
 		this.playerTeams = playerTeams;
 	}
+	
+	public String getPlayerTeam() {
+		return this.statTableData.get("Team");
+	}
 
 	public void addMatchData(FSPlayerMatch matchData){
 

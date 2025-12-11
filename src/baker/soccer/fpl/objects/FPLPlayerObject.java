@@ -136,37 +136,37 @@ public class FPLPlayerObject {
 		case(2):
 			return "AVL";
 		case(3):
-			return "BRE";
-		case(4):
-			return "BHA";
-		case(5):
 			return "BUR";
+		case(4):
+			return "BOU";
+		case(5):
+			return "BRE";
 		case(6):
-			return "CHE";
+			return "BHA";
 		case(7):
-			return "CRY";
+			return "CHE";
 		case(8):
-			return "EVE";
+			return "CRY";
 		case(9):
-			return "LEE";
+			return "EVE";
 		case(10):
-			return "LEI";
+			return "FUL";
 		case(11):
-			return "LIV";
+			return "LEE";
 		case(12):
-			return "MCI";
+			return "LIV";
 		case(13):
-			return "MUN";
+			return "MCI";
 		case(14):
-			return "NEW";
+			return "MUN";
 		case(15):
-			return "NOR";
+			return "NEW";
 		case(16):
-			return "SOU";
+			return "NFO";
 		case(17):
-			return "TOT";
+			return "SUN";
 		case(18):
-			return "WAT";
+			return "TOT";
 		case(19):
 			return "WHU";
 		case(20):

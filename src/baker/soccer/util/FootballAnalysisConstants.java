@@ -25,7 +25,7 @@ public class FootballAnalysisConstants {
 	public static final String HOME_ONLY = "home";
 
 	// Data set constants
-	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021};
+	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025};
 	public static final String[] PLAYER_POSITIONS = {"DEF", "FWD", "MID"};
 	public static final ArrayList<Integer> EPL_FIRST_HALF_MONTHS = getCalendarMonths(true);
 	public static final ArrayList<Integer> EPL_SECOND_HALF_MONTHS = getCalendarMonths(false);
@@ -43,13 +43,22 @@ public class FootballAnalysisConstants {
 	public static final String DEF_STATS_TABLE1 = EPL_BASE_DIR + "\\stat_tables\\def.html";
 	public static final String DEF_STATS_TABLE2 = EPL_BASE_DIR + "\\stat_tables\\def2.html";
 	public static final String DEF_STATS_TABLE3 = EPL_BASE_DIR + "\\stat_tables\\def3.html";
+	public static final String FWD_STATS_SBxG = EPL_BASE_DIR + "\\stat_tables\\fwdSBxG.html";
+	public static final String FWD_STATS_SBxA = EPL_BASE_DIR + "\\stat_tables\\fwdSBxA.html";
+	public static final String MID_STATS_SBxG = EPL_BASE_DIR + "\\stat_tables\\midSBxG.html";
+	public static final String MID_STATS_SBxA = EPL_BASE_DIR + "\\stat_tables\\midSBxA.html";
+	public static final String DEF_STATS_SBxG = EPL_BASE_DIR + "\\stat_tables\\defSBxG.html";
+	public static final String DEF_STATS_SBxA = EPL_BASE_DIR + "\\stat_tables\\defSBxA.html";
+
 	public static final String TEAM_STATS_TABLE1 = EPL_BASE_DIR + "\\stat_tables\\team.html";
 	public static final String FPL_FS_PLAYER_MAP = EPL_BASE_DIR + "\\stat_tables\\player_map.csv";
 	public static final String FPL_GW_MAP = EPL_BASE_DIR + "\\stat_tables\\GWSchedule.csv";
 	public static final String STATS_TABLE_OUTPUT_FILE = EPL_BASE_DIR + "\\EPL Excels\\Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_6GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\6GW_Analysis.xlsx";
 	public static final String STATS_TABLE_OUTPUT_4GW_FILE = EPL_BASE_DIR + "\\EPL Excels\\4GW_Analysis.xlsx";
-	public static final String USHTMLFILENAME = EPL_BASE_DIR+ "\\stat_tables\\understat.html";
+	public static final String USHTMLFILENAME = EPL_BASE_DIR + "\\stat_tables\\understat.html";
+	public static final String USPLAYERINPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.csv";
+	public static final String USPLAYERINPUT6GWFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat6GW.csv";
 	public static final String USPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.json";
 	public static final String USTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\teamUnderstat.json";
 	public static final String FBREFPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.htm";
@@ -118,6 +127,9 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNBPS ="BPS";
 	public static final String EXCELCOLUMNBASEBPS ="Base BPS";
 	public static final String EXCELCOLUMNCS ="CS";
+	public static final String EXCELCOLUMNDEFCON ="Def Con";
+	public static final String EXCELCOLUMNDEFCONPTS ="Def Con Pts";
+	public static final String EXCELCOLUMNDEFCONPTSAPP ="Def Con/App";
 	public static final String EXCELCOLUMNOG ="OG";
 	public static final String EXCELCOLUMNPENTCH ="PenTchs";
 	public static final String EXCELCOLUMNSHOTS ="Shots";
@@ -188,11 +200,19 @@ public class FootballAnalysisConstants {
 	public static final String EXCELCOLUMNFSXG ="fsXG";
 	public static final String EXCELCOLUMNFSNPXG ="fsNPXG";
 	public static final String EXCELCOLUMNFSXA ="fsXA";
+	public static final String EXCELCOLUMNSBXG ="SB xG";
+	public static final String EXCELCOLUMNSBNPXG ="SB NPxG";
+	public static final String EXCELCOLUMNSBXA ="SB xA";
 	public static final String EXCELCOLUMNFSXG90 ="fsXG/90";
 	public static final String EXCELCOLUMNFSNPXG90 ="fsNPXG/90";
 	public static final String EXCELCOLUMNFSXA90 ="fsXA/90";
 	public static final String EXCELCOLUMNFSXPTS90 ="fsXPTS/90";
 	public static final String EXCELCOLUMNFSNPXPTS90 ="fsNPXPTS/90";
+	public static final String EXCELCOLUMNSBXG90 ="sbXG/90";
+	public static final String EXCELCOLUMNSBNPXG90 ="sbNPXG/90";
+	public static final String EXCELCOLUMNSBXA90 ="sbXA/90";
+	public static final String EXCELCOLUMNSBXPTS90 ="sbXPTS/90";
+	public static final String EXCELCOLUMNSBNPXPTS90 ="sbNPXPTS/90";
 	public static final String EXCELCOLUMNFBREFXG ="fbrefXG/90";
 	public static final String EXCELCOLUMNFBREFNPXG ="fbrefNPXG/90";
 	public static final String EXCELCOLUMNFBREFXA ="fbrefXA/90";
@@ -239,7 +259,7 @@ public class FootballAnalysisConstants {
 	public static final String CSVTEAMMATCHHEADERS = getTeamMatchHeaders();
 
 	// FFS Stat Names
-	public static final String FPLASSISTS = "Total Assists";
+	public static final String FPLASSISTS = "Assists - Opta";
 	public static final String FPLCS = "Clean Sheets";
 	public static final String FPLGC = "Goals Conceded";
 	public static final String FPLGS = "Goals";
@@ -249,7 +269,7 @@ public class FootballAnalysisConstants {
 	public static final String FPLYCS = "Premier League Yellow Cards";
 	public static final String FPLRCS = "Premier League Total Red Cards";
 	public static final String FPLPENSVS = "Saves From Penalty";
-
+	
 	private static final ArrayList<Integer> getCalendarMonths (boolean firstHalf){
 		ArrayList<Integer> retVal = new ArrayList<Integer>();
 
@@ -334,6 +354,8 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBONUS);
 		retVal.add(EXCELCOLUMNBPS);
 		retVal.add(EXCELCOLUMNBASEBPS);
+		retVal.add(EXCELCOLUMNDEFCON);
+		retVal.add(EXCELCOLUMNDEFCONPTS);
 		retVal.add(EXCELCOLUMNPENTCH);
 		retVal.add(EXCELCOLUMNSHOTS);
 		retVal.add(EXCELCOLUMNNPSHOTS);
@@ -367,6 +389,7 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBONUS90);
 		retVal.add(EXCELCOLUMNBPS90);
 		retVal.add(EXCELCOLUMNBASEBPS90);
+		retVal.add(EXCELCOLUMNDEFCONPTSAPP);
 		retVal.add(EXCELCOLUMNPENTCH90);
 		retVal.add(EXCELCOLUMNSHOTS90);
 		retVal.add(EXCELCOLUMNNPSHOTS90);
@@ -394,6 +417,14 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNUXA);
 		retVal.add(EXCELCOLUMNUXPTS);
 		retVal.add(EXCELCOLUMNUXNPPTS);
+		retVal.add(EXCELCOLUMNSBXG);
+		retVal.add(EXCELCOLUMNSBNPXG);
+		retVal.add(EXCELCOLUMNSBXA);
+		retVal.add(EXCELCOLUMNSBXG90);
+		retVal.add(EXCELCOLUMNSBNPXG90);
+		retVal.add(EXCELCOLUMNSBXA90);
+		retVal.add(EXCELCOLUMNSBXPTS90);
+		retVal.add(EXCELCOLUMNSBNPXPTS90);
 		retVal.add(EXCELCOLUMNFSXG);
 		retVal.add(EXCELCOLUMNFSNPXG);
 		retVal.add(EXCELCOLUMNFSXA);
@@ -402,11 +433,6 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNFSXA90);
 		retVal.add(EXCELCOLUMNFSXPTS90);
 		retVal.add(EXCELCOLUMNFSNPXPTS90);
-		retVal.add(EXCELCOLUMNFBREFXG);
-		retVal.add(EXCELCOLUMNFBREFNPXG);
-		retVal.add(EXCELCOLUMNFBREFXA);
-		retVal.add(EXCELCOLUMNFBREFXPTS);
-		retVal.add(EXCELCOLUMNFBREFNPXPTS);
 		retVal.add(EXCELCOLUMNAVGXG);
 		retVal.add(EXCELCOLUMNAVGNPXG);
 		retVal.add(EXCELCOLUMNAVGXA);
@@ -444,13 +470,16 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNBCC,"Big Chances Created");
 		retVal.put(EXCELCOLUMNGGOALINV,"FPL Goal Involvement");
 		retVal.put(EXCELCOLUMNICT,"ICT Index");
-		retVal.put(EXCELCOLUMNASS,"Assists");
+		retVal.put(EXCELCOLUMNASS,"Assists - Opta");
 		retVal.put(EXCELCOLUMNGIB,"Goals From Inside Box");
 		retVal.put(EXCELCOLUMNGSOPEN,"Goals From Open Play");
 		retVal.put(EXCELCOLUMNPKMISS,"Penalties Missed");
 		retVal.put(EXCELCOLUMNMINS,"Time Played - FPL");
 		retVal.put(EXCELCOLUMNAPPS,"Appearances");
 		retVal.put(EXCELCOLUMNPENTCH,"Touches - Penalty Area");
+		retVal.put(EXCELCOLUMNDEFCON,"Defensive Contributions");
+		retVal.put(EXCELCOLUMNDEFCONPTS,"Defensive Contribution Points");
+		retVal.put(EXCELCOLUMNDEFCONPTSAPP,"Defensive Contributions Per Appearance");
 		retVal.put(EXCELCOLUMNSIBPERCENT, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMN6YDPERCENT, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNACC, FORMULAIDENTIFIER);
@@ -515,11 +544,14 @@ public class FootballAnalysisConstants {
 		retVal.put(EXCELCOLUMNFSXPTS90, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNFSNPXPTS90, FORMULAIDENTIFIER);
 		
-		retVal.put(EXCELCOLUMNFBREFXG, "");
-		retVal.put(EXCELCOLUMNFBREFNPXG, "");
-		retVal.put(EXCELCOLUMNFBREFXA, "");
-		retVal.put(EXCELCOLUMNFBREFXPTS, FORMULAIDENTIFIER);
-		retVal.put(EXCELCOLUMNFBREFNPXPTS, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNSBXG, "SB-xG Expected Goals");
+		retVal.put(EXCELCOLUMNSBNPXG, "SB-xG Non-Penalty");
+		retVal.put(EXCELCOLUMNSBXA, "SB-xG Assisted");	
+		retVal.put(EXCELCOLUMNSBXG90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNSBNPXG90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNSBXA90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNSBXPTS90, FORMULAIDENTIFIER);
+		retVal.put(EXCELCOLUMNSBNPXPTS90, FORMULAIDENTIFIER);
 		
 		retVal.put(EXCELCOLUMNAVGXG, FORMULAIDENTIFIER);
 		retVal.put(EXCELCOLUMNAVGNPXG, FORMULAIDENTIFIER);
@@ -541,7 +573,7 @@ public class FootballAnalysisConstants {
 		retVal.add(FootballAnalysisConstants.FPLPENSVS);
 		
 		retVal.add("Appearances");
-		retVal.add("Assists");
+		retVal.add("Assists - Opta");
 		retVal.add("Attempts From Set Plays");
 		retVal.add("Big Chances Created");
 		retVal.add("Big Chances Missed");
@@ -578,7 +610,7 @@ public class FootballAnalysisConstants {
 		retVal.add("Subbed Off");
 		retVal.add("Subbed On");
 		retVal.add("TEAM_NAME");
-		retVal.add("Total Assists");
+		retVal.add("Assists - Opta");
 		retVal.add("Premier League Total Red Cards");
 		retVal.add("Premier League Yellow Cards");
 		retVal.add("Touches - Penalty Area");
@@ -643,6 +675,8 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBPS);
 		retVal.add(EXCELCOLUMNBASEBPS);
 		retVal.add(EXCELCOLUMNOG);
+		retVal.add(EXCELCOLUMNDEFCON);
+		retVal.add(EXCELCOLUMNDEFCONPTS);
 		retVal.add(EXCELCOLUMNCS);
 		retVal.add(EXCELCOLUMNPENTCH);
 		retVal.add(EXCELCOLUMNSHOTS);
@@ -680,6 +714,9 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNFSXG);
 		retVal.add(EXCELCOLUMNFSNPXG);
 		retVal.add(EXCELCOLUMNFSXA);
+		retVal.add(EXCELCOLUMNSBXG);
+		retVal.add(EXCELCOLUMNSBNPXG);
+		retVal.add(EXCELCOLUMNSBXA);		
 
 		return retVal;
 	}
@@ -693,6 +730,7 @@ public class FootballAnalysisConstants {
 		retVal.add(EXCELCOLUMNBONUS90);
 		retVal.add(EXCELCOLUMNBPS90);
 		retVal.add(EXCELCOLUMNBASEBPS90);
+		retVal.add(EXCELCOLUMNDEFCONPTSAPP);
 		retVal.add(EXCELCOLUMNPENTCH90);
 		retVal.add(EXCELCOLUMNSHOTS90);
 		retVal.add(EXCELCOLUMNNPSHOTS90);
@@ -753,12 +791,12 @@ public class FootballAnalysisConstants {
 	private static ArrayList<String> getAnalysisPurpleColumnHeaders(){
 		ArrayList<String> retVal = new ArrayList<String>();		
 
-		retVal.add(EXCELCOLUMNFBREFXG);
-		retVal.add(EXCELCOLUMNFBREFNPXG);
-		retVal.add(EXCELCOLUMNFBREFXA);
-		retVal.add(EXCELCOLUMNFBREFXPTS);
-		retVal.add(EXCELCOLUMNFBREFNPXPTS);
-
+		retVal.add(EXCELCOLUMNSBXG90);
+		retVal.add(EXCELCOLUMNSBNPXG90);
+		retVal.add(EXCELCOLUMNSBXA90);
+		retVal.add(EXCELCOLUMNSBXPTS90);
+		retVal.add(EXCELCOLUMNSBNPXPTS90);
+		
 		return retVal;
 	}
 
@@ -838,12 +876,18 @@ public class FootballAnalysisConstants {
 	
 			case "Huddersfield Town":
 				return "Huddersfield";
-	
+				
+			case "Ipswich Town":
+				return "Ipswich";
+			
 			case "Leeds United":
 				return "Leeds";
 			
 			case "Leicester City":
 				return "Leicester";
+			
+			case "Luton Town":
+				return "Luton";
 	
 			case "Norwich City":
 				return "Norwich";
@@ -912,5 +956,72 @@ public class FootballAnalysisConstants {
 		
 		retVal.sort(null);
 		return retVal;
+	}
+	
+	public static String getFFTeamMap(String longTeamName){
+		switch(longTeamName){
+			case "Arsenal":
+				return "ARS";
+
+			case "Aston Villa":
+				return "AVL";
+
+			case "Brentford":
+				return "BRE";
+
+			case "Brighton and Hove Albion":
+				return "BHA";
+
+			case "Bournemouth":
+				return "BOU";
+
+			case "Burnley":
+				return "BUR";
+
+			case "Chelsea":
+				return "CHE";
+
+			case "Crystal Palace":
+				return "CRY";
+
+			case "Everton":
+				return "EVE";
+
+			case "Fulham":
+				return "FUL";
+
+			case "Leeds United":
+				return "LEE";
+
+			case "Liverpool":
+				return "LIV";
+
+			case "Manchester United":
+				return "MUN";
+
+			case "Manchester City":
+				return "MCI";
+
+			case "Newcastle United":
+				return "NEW";
+
+			case "Nottingham Forest":
+				return "NFO";
+
+			case "Sunderland":
+				return "SUN";
+
+			case "Tottenham Hotspur":
+				return "TOT";
+
+			case "West Ham United":
+				return "WHU";
+
+			case "Wolverhampton Wanderers":
+				return "WOL";
+
+			default:
+				return "";
+		}
 	}
 }
