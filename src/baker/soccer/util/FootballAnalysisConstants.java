@@ -60,7 +60,7 @@ public class FootballAnalysisConstants {
 	public static final String USPLAYERINPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.csv";
 	public static final String USPLAYERINPUT6GWFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat6GW.csv";
 	public static final String USPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\playerUnderstat.json";
-	public static final String USTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\teamUnderstat.json";
+	public static final String USTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\teamUnderstat.csv";
 	public static final String FBREFPLAYEROUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.htm";
 	public static final String FBREFTEAMOUTPUTFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref_team.htm";
 	public static final String FBREFHTMLPLAYERFILENAME = EPL_BASE_DIR + "\\stat_tables\\fbref.html";

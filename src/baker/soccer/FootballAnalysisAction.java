@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -37,9 +38,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import baker.soccer.fbref.FBRefAction;
-import baker.soccer.fbref.objects.FBRefPlayerObject;
-import baker.soccer.fbref.objects.FBRefTeamObject;
 import baker.soccer.fpl.FPLUtil;
 import baker.soccer.fpl.objects.FPLPlayerObject;
 import baker.soccer.fs.objects.FSMatchReturnObject;
@@ -242,7 +240,7 @@ public class FootballAnalysisAction {
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_MATCH_ANALYSIS)){
 			String gameWeeks = args.length != 3 ? "" : args[2];
 			
-			exportTeamTableData(processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1), UnderstatAction.processUnderstatXGTeamJSON(), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "teamtable" + gameWeeks + ".csv");
+			exportTeamTableData(processFantScoutTeamStatTablesWorker(FootballAnalysisConstants.TEAM_STATS_TABLE1), UnderstatAction.processUnderstatXGTeamJSON(), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "teamtable" + gameWeeks + ".csv", gameWeeks);
 		}
 		else if(option.equalsIgnoreCase(FootballAnalysisConstants.FS_TEAM_ANALYSIS)){
 			/*
@@ -250,34 +248,7 @@ public class FootballAnalysisAction {
 			 * matchPlayerOption = FootballAnalysisConstants.FS_MATCH_TEAM_ONLY or FootballAnalysisConstants.FS_MATCH_PLAYERS_ONLY to select
 			 * gameLocationOption = FootballAnalysisConstants.AWAY_ONLY or FootballAnalysisConstants.HOME_ONLY. If any other optionn defaults to all
 			 */
-			
-			/*
-			 * 
-			 * NEED TO BE REDONE
-			 * 
-			 * 		
-			int gameWeekOption = -1;
-			
-			if(args.length == 5){
-				try{
-					int currentGameWeek;
-					int numberOfWeeks;
-					Integer.parseInt(args[4]);
-					Scanner scan= new Scanner(System.in);
 
-					System.out.println("Current game week?");
-					currentGameWeek = scan.nextInt();
-
-					System.out.println("Number of weeks?");
-					numberOfWeeks = scan.nextInt();
-
-					gameWeekOption = currentGameWeek - numberOfWeeks + 1;
-					System.out.println(gameWeekOption);
-					scan.close();
-				}
-				catch(NumberFormatException e){System.out.println(e);}
-			}
-*/
 			processRenameMatchFiles(FootballAnalysisConstants.MATCHES_BASEDIR + "\\" + years + "\\");
 			exportTeamData(processMatchFilesController(years, matchPlayersOption), FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + ".csv", FootballAnalysisConstants.EPL_BASE_DIR + "\\" + years + "sum.csv", gameLocationOption, UnderstatAction.processUnderstatXGTeamJSON());
 		}
@@ -286,7 +257,7 @@ public class FootballAnalysisAction {
 		}
 	}
 
-	private static void exportTeamTableData(HashMap<String, FSTeamTableObject> teamData, HashMap<String, UnderstatTeamObject> understatTeamData, String fileName) throws Exception {
+	private static void exportTeamTableData(HashMap<String, FSTeamTableObject> teamData, HashMap<String, UnderstatTeamObject> understatTeamData, String fileName, String gameWeeks) throws Exception {
 		String fileData = "Team,OPP Big Chances,OPP ShotsOnTarget,OPP Goals,OPP xG,Big Chances,ShotsOnTarget,Goals,xG,Games Played, UStat xG, UStat OPP xG\n"; 
 		
 		Iterator<String> iterator = teamData.keySet().iterator();
@@ -296,10 +267,17 @@ public class FootballAnalysisAction {
 			fileData += teamData.get(tempStr).csvOutput();
 
 			UnderstatTeamObject tempUnderstatTeam = understatTeamData.get(FootballAnalysisConstants.mapUnderstatTeamName(tempStr));
-			
-			fileData += "," + tempUnderstatTeam.sumXG() 
-				+ "," + tempUnderstatTeam.sumXGA()
-				+ "\n";
+
+			if(gameWeeks.compareTo("sixGW") == 0){
+				fileData += "," + tempUnderstatTeam.getSixGWXG() 
+					+ "," + tempUnderstatTeam.getSixGWXGA()
+					+ "\n";
+			}
+			else{
+				fileData += "," + tempUnderstatTeam.getXG() 
+					+ "," + tempUnderstatTeam.getXGA()
+					+ "\n";
+			}
 		}
 		FootballAnalysisUtil.writeFile(fileName, fileData);
 	}
@@ -894,7 +872,7 @@ public class FootballAnalysisAction {
 
 			UnderstatTeamObject tempUnderstatTeam = understatXGData.get(FootballAnalysisConstants.mapUnderstatTeamName(tempTeamObj.getTeamName()));
 
-			fileData.append("," + tempUnderstatTeam.sumXG() + "," + tempUnderstatTeam.sumXGA());
+			fileData.append("," + tempUnderstatTeam.getXG() + "," + tempUnderstatTeam.getXGA());
 
 			fileData.append("\n");
 		}

@@ -36,7 +36,8 @@ async function main(){
 
     let gwStartDateString = gwStartYear + '-' + (gwStartMonth < 10 ? '0' : '') + gwStartMonth + '-' + (gwStartDay < 10 ? '0' : '') + gwStartDay + DATETIMESTRING;
 
-    console.log('GW Start String: ' + gwStartDateString);
+    console.log('GW Start String GW ' + (startGW + 1) + ': ' + gwStartDateString);
+    console.log('gwArray[startGW] ' + gwArray[startGW]);
 
     const response = await fetch("https://understat.com/main/getPlayersStats/", {
     "headers": {
