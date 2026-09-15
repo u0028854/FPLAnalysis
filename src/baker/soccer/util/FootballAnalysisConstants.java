@@ -25,7 +25,7 @@ public class FootballAnalysisConstants {
 	public static final String HOME_ONLY = "home";
 
 	// Data set constants
-	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025};
+	public static final int[] EPL_SEASONS = {2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026};
 	public static final String[] PLAYER_POSITIONS = {"DEF", "FWD", "MID"};
 	public static final ArrayList<Integer> EPL_FIRST_HALF_MONTHS = getCalendarMonths(true);
 	public static final ArrayList<Integer> EPL_SECOND_HALF_MONTHS = getCalendarMonths(false);
@@ -873,6 +873,12 @@ public class FootballAnalysisConstants {
 	
 			case "Cardiff City":
 				return "Cardiff";
+
+			case "Coventry City":
+				return "Coventry";
+				
+			case "Hull City":
+				return "Hull";
 	
 			case "Huddersfield Town":
 				return "Huddersfield";
@@ -981,6 +987,9 @@ public class FootballAnalysisConstants {
 			case "Chelsea":
 				return "CHE";
 
+			case "Coventry City":
+				return "COV";
+				
 			case "Crystal Palace":
 				return "CRY";
 
@@ -990,6 +999,12 @@ public class FootballAnalysisConstants {
 			case "Fulham":
 				return "FUL";
 
+			case "Hull City":
+				return "HUL";
+				
+			case "Ipswich Town":
+				return "IPS";
+				
 			case "Leeds United":
 				return "LEE";
 

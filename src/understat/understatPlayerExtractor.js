@@ -28,7 +28,7 @@ async function main(){
 
         startGW = endGW - 6  < 0 ? 0 : endGW - 6;
     }
-    
+
     let gwStartDate = new Date(gwArray[startGW] - DATEOFFSET);
     let gwStartYear = gwStartDate.getFullYear();
     let gwStartMonth = gwStartDate.getMonth() + 1;
@@ -54,9 +54,9 @@ async function main(){
         "sec-fetch-site": "same-origin",
         "x-requested-with": "XMLHttpRequest",
         "cookie": "_ga=GA1.2.430755408.1754982789; UID=b05101d57f8f07da; _ym_uid=1763929900160077524; _ym_d=1763929900; _ga_5844WCVBK6=GS2.2.s1765145473$o106$g1$t1765146090$j21$l0$h0; PHPSESSID=saqfer5e3l8egll4mi3g1np0v7; _ym_isad=2; _ym_visorc=w; PROMOTIONS=eyI3Ijp7Im5hbWUiOiJhZHNlbnNlIiwidmlld3MiOlsxNzY1MjM4ODQ4ODg2LDE3NjUyMzg4NTA5ODAsMTc2NTIzODg1NjA4MiwxNzY1MjM5NDg4NjU4LDE3NjUyMzk2NTk2MjcsMTc2NTIzOTg4NTE3Nl0sImNsaWNrcyI6W119LCJkYXRldGltZSI6MTc2NTE0NTQ3Mjc1Mn0=",
-        "Referer": "https://understat.com/league/EPL/2025"
+        "Referer": "https://understat.com/league/EPL/2026"
     },
-    "body": "league=EPL&season=2025&date_start=" + gwStartDateString,
+    "body": "league=EPL&season=2026&date_start=" + gwStartDateString,
     "method": "POST"
     });
 

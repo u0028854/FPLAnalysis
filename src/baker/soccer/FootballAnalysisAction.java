@@ -8,7 +8,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -58,11 +57,17 @@ import baker.soccer.util.objects.FPLFSMapObject;
 /*****
  * Each year:
  * 
+ * OLD////
  * Change paths on batch files
  * Add macth numbers to batch file config
- * Change team names in EPLUtil.mapTeams(int teamID)
+ * Change team names in  EPLUtil.mapTeams(int teamID)
  * 
- * Modify any team mappings in mapUnderstatTeamName and mapFBRefTeamName
+ * CURRENT
+ * Change years on batch files
+ * Change years in understatTeamExtractor.js and understatPlayerExtractor.js
+ * Add years to FootballAnalysisConstants.EPL_SEASONS
+ * Modify any team mappings in FootballAnalysisConstants.mapUnderstatTeamName and FootballAnalysisConstants.getFFTeamMap
+ * Update GW timestamps in GWScheduleExtract.csv by running GameweekExtractor.js
  * 
  * To add new columns:
  * Add an EXCELCOLUMN**** name to FootballAnalysisConstants
@@ -1020,6 +1025,10 @@ public class FootballAnalysisAction {
 			FSPlayerObject tempPlayer = playerObjects.get(playerIterator.next());
 			
 			System.out.println("FS: " + tempPlayer.getName());
+			
+			if(tempPlayer.getName().equals("Dario Cassia Luis Essugo")){
+				continue;
+			}
 
 			HashMap<String,String> tempStatTableData = tempPlayer.getStatTableData();
 			HashMap<String,String> columnHeaderMap = FootballAnalysisConstants.EXCELPLAYERSTATMAP;

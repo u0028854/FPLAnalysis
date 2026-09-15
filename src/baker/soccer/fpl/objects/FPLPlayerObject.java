@@ -136,15 +136,15 @@ public class FPLPlayerObject {
 		case(2):
 			return "AVL";
 		case(3):
-			return "BUR";
-		case(4):
 			return "BOU";
-		case(5):
+		case(4):
 			return "BRE";
-		case(6):
+		case(5):
 			return "BHA";
-		case(7):
+		case(6):
 			return "CHE";
+		case(7):
+			return "COV";
 		case(8):
 			return "CRY";
 		case(9):
@@ -152,25 +152,25 @@ public class FPLPlayerObject {
 		case(10):
 			return "FUL";
 		case(11):
-			return "LEE";
+			return "HUL";
 		case(12):
-			return "LIV";
+			return "IPS";
 		case(13):
-			return "MCI";
+			return "LEE";
 		case(14):
-			return "MUN";
+			return "LIV";
 		case(15):
-			return "NEW";
+			return "MCI";
 		case(16):
-			return "NFO";
+			return "MUN";
 		case(17):
-			return "SUN";
+			return "NEW";
 		case(18):
-			return "TOT";
+			return "NFO";
 		case(19):
-			return "WHU";
+			return "SUN";
 		case(20):
-			return "WOL";
+			return "TOT";
 		default:
 			return "ERROR";
 		}

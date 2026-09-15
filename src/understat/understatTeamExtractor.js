@@ -2,7 +2,7 @@ const fplUtils = require('../fplUtils.js');
 const fs = require('fs');
 
 async function main(){
-    const response = await fetch("https://understat.com/getLeagueData/EPL/2025", {
+    const response = await fetch("https://understat.com/getLeagueData/EPL/2026", {
         "headers": {
             "accept": "application/json, text/javascript, */*; q=0.01",
             "accept-language": "en-US,en;q=0.9",

@@ -69,6 +69,7 @@ public class FPLUtil {
 		return retVal;
 	}
 
+	@SuppressWarnings("null")
 	private static HashMap<String, FPLPlayerObject> processEPLPlayerSeasonActionWorker() throws Exception{
 		HashMap<String, FPLPlayerObject> retVal = new HashMap<String, FPLPlayerObject>();
 
