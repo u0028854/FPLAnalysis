@@ -4,14 +4,14 @@
  */
 'use strict';
 
-const unirest = require('unirest');
-const fs = require("fs");
-const { argv } = require('process');
-const fplUtils = require('../fplUtils.js');
+import unirest from 'unirest';
+import * as fs from 'fs';
+import { argv } from 'process';
+import * as fplUtils from '../fplUtils.js';
 
-const FPL_PLAYER_FILEBASE = 'c:\\EPLJava\\stat_tables\\';
-const FPL_PLAYER_FILESUFFIX = 'fpl.json';
-const ERROR_FILESUFFIX = 'fplError.json';
+const FPL_PLAYER_FILEBASE = await fplUtils.getProp('outputStatDirectory');
+const FPL_PLAYER_FILESUFFIX = await fplUtils.getProp('fplPlayeFileSuffix');
+const ERROR_FILESUFFIX = await fplUtils.getProp('fplPlayerErrorSuffix');
 const JSONFILESTART = '{"players":[';
 
 function main(){

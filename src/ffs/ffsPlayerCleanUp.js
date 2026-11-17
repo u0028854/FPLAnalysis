@@ -1,13 +1,13 @@
-const fs = require('fs');
+import * as fs from 'fs';
 
 let fileNames = [
-    'mid', 'mid2', 'mid3', 'midSBxG', 'midSBxA',
-    'fwd', 'fwd2', 'fwd3', 'fwdSBxG', 'fwdSBxA',
-    'def', 'def2', 'def3', 'defSBxG', 'defSBxA'
+    'mid', 'mid2', 'mid3', '6week_mid', '6week_mid2', '6week_mid3',
+    'fwd', 'fwd2', 'fwd3', '6week_fwd', '6week_fwd2', '6week_fwd3',
+    'def', 'def2', 'def3', '6week_def', '6week_def2', '6week_def3'
 ];
 
 fileNames.forEach((arrayElement) => {
-    let fileName = 'c:\\EPLJava\\stat_tables\\' + arrayElement + '.html';
+    let fileName = 'c:\\Users\\cdbak\\EPLJava\\stat_tables\\' + arrayElement + '.html';
 
     console.log('Processing ' + fileName);
 

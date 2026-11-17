@@ -6,3 +6,5 @@ Test.*
 *.html
 *.txt
 *.csv
+.metadata/*
+settings.json

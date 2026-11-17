@@ -32,7 +32,7 @@ public class FootballAnalysisConstants {
 	public static final ArrayList<java.util.Date> FPL_GAMEWEEK_DATES = getGameweekDates();
 
 	// Path constants
-	public static final String EPL_BASE_DIR = "c:\\EPLJava";
+	public static final String EPL_BASE_DIR = "c:\\Users\\cdbak\\EPLJava";
 	public static final String MATCHES_BASEDIR = EPL_BASE_DIR + "\\fsmatches";
 	public static final String FWD_STATS_TABLE1 = EPL_BASE_DIR + "\\stat_tables\\fwd.html";
 	public static final String FWD_STATS_TABLE2 = EPL_BASE_DIR + "\\stat_tables\\fwd2.html";
@@ -97,17 +97,29 @@ public class FootballAnalysisConstants {
 	public static final String MONGOTEAMCOLLECTIONNAME = "FFSTeamData";
 
 	// Excel Format Options    
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor MYBLUE = new XSSFColor(new Color(0,32,96));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor MYRED = new XSSFColor(new Color (192,0,0));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor MYGREEN = new XSSFColor(new Color (0,176,80));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor MYBROWN = new XSSFColor(new Color (128,96,0));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor MYORANGE = new XSSFColor(new Color (204,104,0));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor TRUEWHITE = new XSSFColor(new Color(254,255,255));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor TRUEBLACK = new XSSFColor(new Color(1,0,0));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor TRUEGREEN = new XSSFColor(new Color (0,255,0));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor TRUEYELLOW = new XSSFColor(new Color (255,255,102));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor DARKGRAY = new XSSFColor(new Color (217,217,217));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor DEEPPURPLE = new XSSFColor(new Color (102,0,102));
+	@SuppressWarnings("deprecation")
 	public static final XSSFColor DEEPBLUE = new XSSFColor(new Color (31,78,120));
 	public static final short DEFAULTEXCELFONTSIZE = 9;
 	public static final String DEFAULTEXCELFONTFAMILY = "Calibri";

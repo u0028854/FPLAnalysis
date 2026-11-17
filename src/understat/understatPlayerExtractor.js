@@ -1,15 +1,15 @@
-const fplUtils = require('../fplUtils.js');
-const fs = require('fs');
-const { argv } = require('process');
+import fs from 'fs';
+import UnderstatPlayerDataObject from '/Users/cdbak/workspace/FPLAnalysis/src/understat/UnderstatPlayerDataObject.js';
+import fplUtils from '/Users/cdbak/workspace/FPLAnalysis/src/fplUtils.js';
 
 let DATEOFFSET = 86400000;
 let DATETIMESTRING = '+06%3A00%3A00';
 
-async function main(){
+export async function getUStatPlayerData(last6GWOption, uStatFFSPlayerNameMap){
+    console.log('getUStatPlayerData() last6GWOption: ' + last6GWOption);
     let fileName = await fplUtils.getProp('gwScheduleFile');
     let fileData = fs.readFileSync(fileName, 'utf-8').split('\n');
     let gwArray = [];
-    let last6GWOption = false;
 
     fileData.forEach(gwData => {
         gwArray.push(parseInt(gwData.split(',')[1]));
@@ -18,8 +18,7 @@ async function main(){
     let startGW = 0;
     let endGW = 37;
 
-    if(argv.length === 3 && argv[2].includes('last6GW')){
-        last6GWOption = true;
+    if(last6GWOption){
         let currentTime = new Date().getTime();
 
         for(let i = 5; i < gwArray.length && gwArray[i] < currentTime; i++){
@@ -61,23 +60,21 @@ async function main(){
     });
 
     const body = await response.text();
+    let playerJSONMap = new Map();
+
     let playerJSONs = JSON.parse(body).players;
-    let playerOutput = '';
     
     playerJSONs.forEach(playerJSON =>{
-        playerOutput += fplUtils.removeSpecialChars(playerJSON.player_name) + ','
-        + playerJSON.time + ','
-        + (Math.round(playerJSON.xG * 100.0) / 100.0) + ','
-        + (Math.round(playerJSON.npxG * 100.0) / 100.0) + ','
-        + (Math.round(playerJSON.xA * 100.0) / 100.0) + ','
-        + playerJSON.position + ','
-        + playerJSON.team_title + '\n';
+        let newPlayerObject = new UnderstatPlayerDataObject(fplUtils.removeSpecialChars(playerJSON.player_name), playerJSON.time,
+        (Math.round(playerJSON.xG * 100.0) / 100.0), (Math.round(playerJSON.npxG * 100.0) / 100.0),
+        (Math.round(playerJSON.xA * 100.0) / 100.0), playerJSON.position, playerJSON.team_title);
 
+        if(uStatFFSPlayerNameMap.has(newPlayerObject.playerName)){
+            newPlayerObject.playerName = uStatFFSPlayerNameMap.get(newPlayerObject.playerName);
+        }
+
+        playerJSONMap.set(newPlayerObject.hashCode(), newPlayerObject);
     });
 
-    let outputFile = last6GWOption ? await fplUtils.getProp('uStat6GWPlayerOutputFile') : await fplUtils.getProp('uStatPlayerOutputFile');
-
-    fs.writeFileSync(outputFile, playerOutput);
+    return playerJSONMap;
 }
-
-main();

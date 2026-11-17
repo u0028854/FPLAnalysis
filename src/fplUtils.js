@@ -1,8 +1,9 @@
 'use strict';
-const textDecoder = require('./textDecode.js');
-const fs = require('fs');
-const propertiesReader = require('properties-reader');
-const properties = propertiesReader('/Users/Corey/workspace/FPLAnalysis/src/fplProps.properties');
+import * as textDecoder from './textDecode.js';
+import * as fs from 'fs';
+import { propertiesReader } from 'properties-reader';
+const properties = propertiesReader({ sourceFile: '/Users/cdbak/workspace/FPLAnalysis/src/fplProps.properties' });
+
 let propertiesMap = new Map();
 let initCount = 0;
 
@@ -271,11 +272,5 @@ function translateHTMLCode(strVar){
                 .replace(/\\u00e6/g, 'a')
                 );
 }
-  
-module.exports.buildNameMap = buildNameMap;
-module.exports.buildArgsMap = buildArgsMap;
-module.exports.removeSpecialChars = removeSpecialChars;
-module.exports.getAllProperties = getAllProperties;
-module.exports.getProp = getProp;
-module.exports.translateUTFCode = translateUTFCode;
-module.exports.translateHTMLCode = translateHTMLCode;
+
+export { buildNameMap, buildArgsMap, removeSpecialChars, getAllProperties, getProp, translateUTFCode, translateHTMLCode };

@@ -2,6 +2,7 @@
   "name": "fplanalysis",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "GameweekExtractor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,7 +18,10 @@
   },
   "homepage": "https://github.com/u0028854/FPLAnalysis#readme",
   "dependencies": {
+    "exceljs": "^4.4.0",
     "mongodb": "^5.1.0",
-    "properties-reader": "^2.2.0"
+    "node-html-parser": "^9.0.5",
+    "properties-reader": "^3.0.1",
+    "unirest": "^0.6.0"
   }
 }
