@@ -1,5 +1,3 @@
-import * as fplUtils from '../fplUtils.js';
-
 export default class FFSPlayerDataObject {
     constructor(name, team, position) {
         if(!name || !team || !position){

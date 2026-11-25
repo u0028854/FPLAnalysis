@@ -3,7 +3,6 @@ import * as textDecoder from './textDecode.js';
 import * as fs from 'fs';
 import { propertiesReader } from 'properties-reader';
 const properties = propertiesReader({ sourceFile: '/Users/cdbak/workspace/FPLAnalysis/src/fplProps.properties' });
-const excelOrdering = defineExcelOrdering();
 
 let propertiesMap = new Map();
 let initCount = 0;
@@ -353,4 +352,21 @@ function defineExcelOrdering(){
     return retVal;
 }
 
-export { buildNameMap, buildArgsMap, removeSpecialChars, getAllProperties, getProp, translateUTFCode, translateHTMLCode, defineExcelOrdering };
+function defineExcelTeamColumns(){
+    const retVal = [
+        'Team',
+        'Big Chances Conceded',
+        'Shots On Target Conceded',
+        'Goals Conceded',
+        'xG Conceded',
+        'Big Chances Total',
+        'Shots On Target',
+        'Goals',
+        'xG Expected Goals',
+        'Games Played'
+    ];
+
+    return retVal; 
+}
+
+export { buildNameMap, buildArgsMap, removeSpecialChars, getAllProperties, getProp, translateUTFCode, translateHTMLCode, defineExcelOrdering, defineExcelTeamColumns };

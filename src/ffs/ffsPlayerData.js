@@ -8,16 +8,6 @@ import fs from 'fs';
 import * as fplUtils from '/Users/cdbak/workspace/FPLAnalysis/src/fplUtils.js';
 import FFSPlayerDataObject from '/Users/cdbak/workspace/FPLAnalysis/src/ffs/FFSPlayerDataObject.js';
 
-const DEF_FILE_ONE = await fplUtils.getProp('ffsDefStatsFileOne');
-const DEF_FILE_TWO = await fplUtils.getProp('ffsDefStatsFileTwo');
-const DEF_FILE_THREE = await fplUtils.getProp('ffsDefStatsFileThree');
-const MID_FILE_ONE = await fplUtils.getProp('ffsMidStatsFileOne');
-const MID_FILE_TWO = await fplUtils.getProp('ffsMidStatsFileTwo');
-const MID_FILE_THREE = await fplUtils.getProp('ffsMidStatsFileThree');
-const FWD_FILE_ONE = await fplUtils.getProp('ffsFwdStatsFileOne');
-const FWD_FILE_TWO = await fplUtils.getProp('ffsFwdStatsFileTwo');
-const FWD_FILE_THREE = await fplUtils.getProp('ffsFwdStatsFileThree');
-
 export async function getFFSPlayerData(sixWeekTimeFrame){
     let DEF_FILE_ONE = await fplUtils.getProp('ffsDefStatsFileOne');
     let DEF_FILE_TWO = await fplUtils.getProp('ffsDefStatsFileTwo');

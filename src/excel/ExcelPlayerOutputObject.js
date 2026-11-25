@@ -51,11 +51,11 @@ export default class ExcelPlayerOutputObject {
         this.excelPlayerValues.set('BC Miss', Number(ffsPlayerDataValues.get('Big Chances Missed')));
         this.excelPlayerValues.set('BC', Number(ffsPlayerDataValues.get('Big Chances Total')));
         this.excelPlayerValues.set('Def Con Pts', Number(ffsPlayerDataValues.get('Defensive Contribution Points')));
-        this.excelPlayerValues.set('fsNPXG', fsNPXG);
-        this.excelPlayerValues.set('fsNPXPts', fsNPXPts);
-        this.excelPlayerValues.set('fsXA', fsXA);
-        this.excelPlayerValues.set('fsXG', fsXG);
-        this.excelPlayerValues.set('fsXPts', fsXPts);
+        this.excelPlayerValues.set('fsNPXG', Number(fsNPXG));
+        this.excelPlayerValues.set('fsNPXPts', Number(fsNPXPts));
+        this.excelPlayerValues.set('fsXA', Number(fsXA));
+        this.excelPlayerValues.set('fsXG', Number(fsXG));
+        this.excelPlayerValues.set('fsXPts', Number(fsXPts));
         this.excelPlayerValues.set('GIB', Number(ffsPlayerDataValues.get('Goals From Inside Box')));
         this.excelPlayerValues.set('Goal Inv',  this.createFormula(this.excelPlayerValues.get('FPL Goal Involvement'),100, 2, true, 'divide'));
         this.excelPlayerValues.set('Gs', Number(ffsPlayerDataValues.get('Goals')));
@@ -143,7 +143,7 @@ export default class ExcelPlayerOutputObject {
         this.excelPlayerValues.set('SIB %', this.createFormula(this.excelPlayerValues.get('SIB'), playerShots, 2, true, 'divide'));
     }
 
-    createFormula(left, right, precision = 2, isPercentage, operation = 'divide'){
+    createFormula(left, right, operation = 'divide'){
         let retVal = 0.00;
 
         if(left !== null && left !== undefined && right !== null && right !== undefined){
