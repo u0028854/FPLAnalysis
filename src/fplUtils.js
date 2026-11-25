@@ -3,6 +3,7 @@ import * as textDecoder from './textDecode.js';
 import * as fs from 'fs';
 import { propertiesReader } from 'properties-reader';
 const properties = propertiesReader({ sourceFile: '/Users/cdbak/workspace/FPLAnalysis/src/fplProps.properties' });
+const excelOrdering = defineExcelOrdering();
 
 let propertiesMap = new Map();
 let initCount = 0;
@@ -273,4 +274,83 @@ function translateHTMLCode(strVar){
                 );
 }
 
-export { buildNameMap, buildArgsMap, removeSpecialChars, getAllProperties, getProp, translateUTFCode, translateHTMLCode };
+function defineExcelOrdering(){
+    let retVal = new Map();
+    let coreBlue = '002060';
+    let formulaRed = '8B0606';
+    let expectedGreen = '088a47';
+    let nameWidth = 25;
+    let stdWidth = 9.5;
+
+    retVal.set('Name', { 'position': 0, 'type': 'Text', 'color': coreBlue, 'width': nameWidth, 'alignment': 'left', 'freeze': true});
+    retVal.set('Team', { 'position': 1, 'type': 'Text', 'color': coreBlue, 'width': stdWidth, 'freeze': true});
+    retVal.set('Price', { 'position': 2, 'type': 'Number', 'precision': 1, 'color': coreBlue, 'width': stdWidth, 'freeze': true});
+    retVal.set('Apps', { 'position': 3, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Starts', { 'position': 4, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Mins', { 'position': 5, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Pts', { 'position': 6, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Bonus', { 'position': 7, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BPS', { 'position': 8, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BPS in Starts', { 'position': 9, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Base BPS', { 'position': 10, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Gs', { 'position': 11, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('GIB', { 'position': 14, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('GIB %', { 'position': 15, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Shots', { 'position': 16, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('NP Shots', { 'position': 17, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('SIB', { 'position': 18, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('SOT', { 'position': 19, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Headers', { 'position': 20, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Shot Conv %', { 'position': 21, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('SIB %', { 'position': 22, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Shot Acc %', { 'position': 23, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Header %', { 'position': 24, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BC', { 'position': 25, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BC Scored', { 'position': 26, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BC Miss', { 'position': 27, 'type': 'Number', 'precision': 0, 'color' :coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BC Conv %', { 'position':28, 'type':'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('As', { 'position': 29, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Total As', { 'position': 30, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('KP', { 'position': 31, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('BC Created', { 'position': 32, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('As %', { 'position': 33, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('ICT Index', { 'position': 34, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Goal Inv', { 'position': 35, 'type': 'Percentage', 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('PenTchs', { 'position': 36, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Def Con', { 'position': 37, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Def Con Pts', { 'position': 38, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('DC in Starts', { 'position': 39, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('CS', { 'position': 40, 'type': 'Number', 'precision': 0, 'color': coreBlue, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('fsXG', { 'position': 41, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('fsNPXG', { 'position': 42, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('fsXA', { 'position': 43, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('fsXPts', { 'position': 44, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('fsNPXPts', { 'position': 45, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': true, 'width': stdWidth, 'outlineLevel': 1, 'hidden': true});
+    retVal.set('Mins / App', { 'position': 46, 'type': 'Number', 'precision': 0, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Pts / App', { 'position': 47, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Bonus / App', { 'position': 48, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('BPS / Start', { 'position': 49, 'type': 'Number', 'precision': 1, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Base BPS / App', { 'position': 50, 'type': 'Number', 'precision': 1, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Gs / App', { 'position': 51, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Shots / App', { 'position': 52, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('NP Shots / App', { 'position': 53, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('SIB / App', { 'position': 54, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('SOT / App', { 'position': 55, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('BC / App', { 'position': 56, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('As / App', { 'position': 57, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('Total As / App', { 'position': 58, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('KP / App', { 'position': 59, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('BCC / App', { 'position': 60, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('ICT Index / App', { 'position': 61, 'type': 'Number', 'precision': 1, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('PnTchs / App', { 'position': 62, 'type': 'Number', 'precision': 1, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('DC / Start', { 'position': 63, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('DC Pts / Start', { 'position': 64, 'type': 'Number', 'precision': 2, 'color': formulaRed, 'grouped': false, 'width': stdWidth});
+    retVal.set('fsXA / App', { 'position': 67, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': false, 'width': stdWidth});
+    retVal.set('fsXG / App', { 'position': 68, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': false, 'width': stdWidth});
+    retVal.set('fsXPts / App', { 'position': 69, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': false, 'width': stdWidth});
+    retVal.set('fsNPXPts / App', { 'position': 70, 'type': 'Number', 'precision': 2, 'color': expectedGreen, 'grouped': false, 'width': stdWidth});
+
+    return retVal;
+}
+
+export { buildNameMap, buildArgsMap, removeSpecialChars, getAllProperties, getProp, translateUTFCode, translateHTMLCode, defineExcelOrdering };

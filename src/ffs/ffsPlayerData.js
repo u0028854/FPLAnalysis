@@ -18,16 +18,46 @@ const FWD_FILE_ONE = await fplUtils.getProp('ffsFwdStatsFileOne');
 const FWD_FILE_TWO = await fplUtils.getProp('ffsFwdStatsFileTwo');
 const FWD_FILE_THREE = await fplUtils.getProp('ffsFwdStatsFileThree');
 
-export async function getFFSPlayerData(){
-    let playerMap = await processData(DEF_FILE_ONE, null, 'DEF');
-    playerMap = await processData(DEF_FILE_TWO, playerMap, 'DEF');
-    playerMap = await processData(DEF_FILE_THREE, playerMap, 'DEF');
-    playerMap = await processData(MID_FILE_ONE, playerMap, 'MID');
-    playerMap = await processData(MID_FILE_TWO, playerMap, 'MID');
-    playerMap = await processData(MID_FILE_THREE, playerMap, 'MID');
-    playerMap = await processData(FWD_FILE_ONE, playerMap, 'FWD');
-    playerMap = await processData(FWD_FILE_TWO, playerMap, 'FWD');
-    playerMap = await processData(FWD_FILE_THREE, playerMap, 'FWD');
+export async function getFFSPlayerData(sixWeekTimeFrame){
+    let DEF_FILE_ONE = await fplUtils.getProp('ffsDefStatsFileOne');
+    let DEF_FILE_TWO = await fplUtils.getProp('ffsDefStatsFileTwo');
+    let DEF_FILE_THREE = await fplUtils.getProp('ffsDefStatsFileThree');
+    let MID_FILE_ONE = await fplUtils.getProp('ffsMidStatsFileOne');
+    let MID_FILE_TWO = await fplUtils.getProp('ffsMidStatsFileTwo');
+    let MID_FILE_THREE = await fplUtils.getProp('ffsMidStatsFileThree');
+    let FWD_FILE_ONE = await fplUtils.getProp('ffsFwdStatsFileOne');
+    let FWD_FILE_TWO = await fplUtils.getProp('ffsFwdStatsFileTwo');
+    let FWD_FILE_THREE = await fplUtils.getProp('ffsFwdStatsFileThree');
+
+    if(sixWeekTimeFrame){
+        DEF_FILE_ONE = await fplUtils.getProp('ffs6WeekDefStatsFileOne');
+        DEF_FILE_TWO = await fplUtils.getProp('ffs6WeekDefStatsFileTwo');
+        DEF_FILE_THREE = await fplUtils.getProp('ffs6WeekDefStatsFileThree');
+        MID_FILE_ONE = await fplUtils.getProp('ffs6WeekMidStatsFileOne');
+        MID_FILE_TWO = await fplUtils.getProp('ffs6WeekMidStatsFileTwo');
+        MID_FILE_THREE = await fplUtils.getProp('ffs6WeekMidStatsFileThree');
+        FWD_FILE_ONE = await fplUtils.getProp('ffs6WeekFwdStatsFileOne');
+        FWD_FILE_TWO = await fplUtils.getProp('ffs6WeekFwdStatsFileTwo');
+        FWD_FILE_THREE = await fplUtils.getProp('ffs6WeekFwdStatsFileThree');
+    }
+
+    let defPlayerMap = await processData(DEF_FILE_ONE, null, 'DEF');
+    defPlayerMap = await processData(DEF_FILE_TWO, defPlayerMap, 'DEF');
+    defPlayerMap = await processData(DEF_FILE_THREE, defPlayerMap, 'DEF');
+
+    let midPlayerMap =await processData(MID_FILE_ONE, null, 'MID');
+    midPlayerMap = await processData(MID_FILE_TWO, midPlayerMap, 'MID');
+    midPlayerMap = await processData(MID_FILE_THREE, midPlayerMap, 'MID');
+
+    let fwdPlayerMap =await processData(FWD_FILE_ONE, null, 'FWD');
+    fwdPlayerMap = await processData(FWD_FILE_TWO, fwdPlayerMap, 'FWD');
+    fwdPlayerMap = await processData(FWD_FILE_THREE, fwdPlayerMap, 'FWD');
+
+    let playerMap = new Map();
+
+    playerMap.set('DEF', defPlayerMap);
+    playerMap.set('MID', midPlayerMap);
+    playerMap.set('FWD', fwdPlayerMap);
 
     return playerMap;
 }

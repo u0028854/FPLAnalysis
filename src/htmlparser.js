@@ -3,6 +3,7 @@ import * as fplUtils from '/Users/cdbak/workspace/FPLAnalysis/src/fplUtils.js';
 // import * as understatPlayerExtractor from '/Users/cdbak/workspace/FPLAnalysis/src/understat/understatPlayerExtractor.js';
 import * as fplPlayerData from '/Users/cdbak/workspace/FPLAnalysis/src/fpl/fplPlayerData.js';
 import * as ffsPlayerData from '/Users/cdbak/workspace/FPLAnalysis/src/ffs/ffsPlayerData.js';
+import buildPlayerExcel from '/Users/cdbak/workspace/FPLAnalysis/src/excel.js';
 import ExcelPlayerOutputObject from '/Users/cdbak/workspace/FPLAnalysis/src/excel/ExcelPlayerOutputObject.js';
 
 /*
@@ -13,7 +14,7 @@ const PLAYER_NAME_MAP_FILE = await fplUtils.getProp('playerNameMapFile');
 
 async function main(){
     const fplFFSPlayerNameMap = new Map();
-    const uStatFFSPlayerNameMap = new Map();
+    // const uStatFFSPlayerNameMap = new Map();
     const playerNameFile = fs.readFileSync(PLAYER_NAME_MAP_FILE, 'utf-8').split('\n');
 
     playerNameFile.forEach(line => {
@@ -23,9 +24,9 @@ async function main(){
             fplFFSPlayerNameMap.set(fplName, ffsName);
         }
 
-        if(ffsName !== uStatName){
-            uStatFFSPlayerNameMap.set(uStatName, ffsName);
-        }
+        // if(ffsName !== uStatName){
+        //     uStatFFSPlayerNameMap.set(uStatName, ffsName);
+        // }
     });
 
     const playerMap = await ffsPlayerData.getFFSPlayerData();
@@ -50,21 +51,23 @@ async function main(){
     const fplPlayerMap = await fplPlayerData.getFPLPlayerData(null, fplFFSPlayerNameMap);
 
     fplPlayerMap.forEach((value, key) => {
-        let playerName = value.playerName;
-        let ffsPlayerObject = playerMap.get(playerName);
+        let ffsPositionPlayerMap = playerMap.get(key);
+        let fplPositionPlayerMap = value;
 
-        if(ffsPlayerObject){
-            ffsPlayerObject.fplPlayerObject = value;
-            playerMap.set(playerName, ffsPlayerObject);
-        }
+        fplPositionPlayerMap.forEach((value, key) => {
+            let playerName = value.playerName;
+            let ffsPlayerObject = ffsPositionPlayerMap.get(playerName);
+       
+            if(ffsPlayerObject){
+                ffsPlayerObject.fplPlayerObject = value;
+                ffsPositionPlayerMap.set(playerName, ffsPlayerObject);
+            }
+        });
+
+        playerMap.set(key, ffsPositionPlayerMap);
     });
 
-    playerMap.forEach(
-        (playerObj) => {
-           let tempPlayer = new ExcelPlayerOutputObject(playerObj);
-           console.log(tempPlayer.toString());
-        }
-    )
+    buildPlayerExcel(playerMap);
 }
 
 main();

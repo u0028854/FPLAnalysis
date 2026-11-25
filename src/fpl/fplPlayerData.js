@@ -8,9 +8,19 @@ import unirest from 'unirest';
 import FPLPlayerObject from '/Users/cdbak/workspace/FPLAnalysis/src/fpl/FPLPlayerObject.js';
 import * as fplUtils from '/Users/cdbak/workspace/FPLAnalysis/src/fplUtils.js';
 
+const ELEMENT_POSITION_MAP = new Map([
+    [1, 'GK'],
+    [2, 'DEF'],
+    [3, 'MID'],
+    [4, 'FWD']
+]);
+
 export async function getFPLPlayerData(gwRangeOption, fplFFSPlayerNameMap){
     let timeFrame = null;
     const playerDataMap = new Map();
+    const defPlayerMap = new Map();
+    const midPlayerMap = new Map();
+    const fwdPlayerMap = new Map();
     const fixtureDates = new Array();
     const activePlayers = new Map();
 
@@ -58,21 +68,38 @@ export async function getFPLPlayerData(gwRangeOption, fplFFSPlayerNameMap){
         const tempPlayer = fplJSON[x];
 
         let playerName = fplUtils.removeSpecialChars(tempPlayer.first_name + ' ' + tempPlayer.second_name);
+        let playerPosition = ELEMENT_POSITION_MAP.get(tempPlayer.element_type);
 
         if(fplFFSPlayerNameMap.has(playerName)){
             playerName = fplFFSPlayerNameMap.get(playerName);
         }
 
         if(tempPlayer.minutes > 0){
-            activePlayers.set(playerName, [tempPlayer.id, tempPlayer.now_cost]);
+            activePlayers.set(playerName, [tempPlayer.id, tempPlayer.now_cost, playerPosition]);
         }
     }
 
     for(let [key, value] of activePlayers){
         let playerURL = 'https://fantasy.premierleague.com/api/element-summary/' + value[0] + '/';
         let activePlayer = await getIndividualFPLPlayerData(new FPLPlayerObject(key, value[1]), playerURL, fixtureDates);
-        playerDataMap.set(activePlayer.playerName, activePlayer);
+        let activePlayerPosition = value[2];
+
+        switch(activePlayerPosition){
+            case 'DEF':
+                defPlayerMap.set(activePlayer.playerName, activePlayer);
+                break;
+            case 'MID':
+                midPlayerMap.set(activePlayer.playerName, activePlayer);
+                break;
+            case 'FWD':
+                fwdPlayerMap.set(activePlayer.playerName, activePlayer);
+                break;
+        }
     }
+
+    playerDataMap.set('DEF', defPlayerMap);
+    playerDataMap.set('MID', midPlayerMap);
+    playerDataMap.set('FWD', fwdPlayerMap);
 
     return playerDataMap;
 }
@@ -96,7 +123,6 @@ function getIndividualFPLPlayerData(activePlayer, playerURL, fixtureDates){
                                 playerGameweek.bps,
                                 playerGameweek.clean_sheets,
                                 playerGameweek.assists,
-                                playerGameweek.own_goals,
                                 playerGameweek.defensive_contribution,
                                 playerGameweek.starts
                             );

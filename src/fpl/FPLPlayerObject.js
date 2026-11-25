@@ -10,19 +10,17 @@ export default class FPLPlayerObject {
         this.cleanSheets = 0;
         this.fplAssists = 0;
         this.nowCost = nowCost;
-        this.ownGoals = 0;
         this.defensive_contribution = 0;
         this.defConDuringStarts = 0
         this.starts = 0;
     }
 
-    add(fplPts, fplBonus, bpsPts, cleanSheets, fplAssists, ownGoals, defensiveContributions, matchStarts){
+    add(fplPts, fplBonus, bpsPts, cleanSheets, fplAssists, defensiveContributions, matchStarts){
         this.addPts(fplPts);
         this.addBonus(fplBonus);
         this.addBPS(bpsPts);
         this.addCS(cleanSheets);
         this.addAssist(fplAssists);
-        this.addOwnGoal(ownGoals);
         this.addDefCon(defensiveContributions);
         this.addStarts(matchStarts);
 
@@ -56,10 +54,6 @@ export default class FPLPlayerObject {
         this.fplAssists += fplAssists;
     }
 
-    addOwnGoal(ownGoals){
-        this.ownGoals += ownGoals;
-    }
-
     addDefCon(defensiveContributions){
             this.defensive_contribution += defensiveContributions;
     }
@@ -79,7 +73,6 @@ export default class FPLPlayerObject {
         this.bpsDuringStarts == 0 &&
         this.cleanSheets == 0 &&
         this.fplAssists == 0 &&
-        this.ownGoals == 0 &&
         this.defensive_contribution == 0 &&
         this.defConDuringStarts &&
         this.starts == 0){
@@ -99,7 +92,6 @@ export default class FPLPlayerObject {
         + ', "cleanSheets": ' + this.cleanSheets
         + ', "fplAssists": ' + this.fplAssists
         + ', "nowCost": ' + this.nowCost
-        + ', "ownGoals": ' + this.ownGoals
         + ', "defContributions": ' + this.defensive_contribution
         + ', "defConDuringStarts": ' + this.defConDuringStarts
         + ', "matchStarts": ' + this.starts
